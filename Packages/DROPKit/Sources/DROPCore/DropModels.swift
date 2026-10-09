@@ -42,6 +42,8 @@ public struct DropRequest: Hashable, Sendable {
     public var assets: [DropAsset]
     /// Whether to add `SHA256SUMS.txt` for the assets.
     public var includesChecksums: Bool
+    /// The branch to open a CHANGELOG.md pull request against, or `nil` to leave CHANGELOG.md alone.
+    public var changelogBase: String?
 
     public init(
         projectID: UUID,
@@ -53,7 +55,8 @@ public struct DropRequest: Hashable, Sendable {
         isDraft: Bool = false,
         isPrerelease: Bool = false,
         assets: [DropAsset] = [],
-        includesChecksums: Bool = true
+        includesChecksums: Bool = true,
+        changelogBase: String? = nil
     ) {
         self.projectID = projectID
         self.slug = slug
@@ -65,6 +68,7 @@ public struct DropRequest: Hashable, Sendable {
         self.isPrerelease = isPrerelease
         self.assets = assets
         self.includesChecksums = includesChecksums
+        self.changelogBase = changelogBase
     }
 
     public var releaseTitle: String {
@@ -90,6 +94,8 @@ public enum DropStep: Hashable, Sendable {
     case uploadChecksums(existingID: Int64?)
     /// Compare GitHub's checksums of the uploaded assets with the local ones.
     case verifyChecksums
+    /// Open a pull request against `base` that adds the notes to CHANGELOG.md.
+    case openChangelogPullRequest(tag: String, base: String)
 
     /// A short description for the plan, the progress list and the history.
     public var title: String {
@@ -110,6 +116,8 @@ public enum DropStep: Hashable, Sendable {
             String(localized: "Upload \(Checksums.fileName)")
         case .verifyChecksums:
             String(localized: "Verify the uploaded checksums")
+        case .openChangelogPullRequest(let tag, let base):
+            String(localized: "Open a pull request against \(base) that adds \(tag) to CHANGELOG.md")
         }
     }
 }

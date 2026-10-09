@@ -12,6 +12,8 @@ public final class ProjectActivityModel {
     public private(set) var releases: [GitHubRelease] = []
     public private(set) var history: [DropRecord] = []
     public private(set) var auditLog: [AuditEntry] = []
+    /// The commits since the last release on the default branch.
+    public private(set) var unreleased: UnreleasedChanges?
     public private(set) var isLoading = false
     public var error: DROPError?
 
@@ -29,13 +31,14 @@ public final class ProjectActivityModel {
         releases.first { !$0.isDraft && !$0.isPrerelease }
     }
 
-    public func load() async {
+    public func load(branch: String) async {
         loadLocal()
         guard account.isSignedIn else { return }
         isLoading = true
         defer { isLoading = false }
         do {
             releases = try await services.releases.releases(project.slug)
+            unreleased = try await services.changelog.unreleased(project.slug, branch: branch)
         } catch {
             self.error = account.filter(error)
         }

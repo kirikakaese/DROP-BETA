@@ -10,6 +10,7 @@ public struct ServiceContainer: Sendable {
     public var auth: any AuthServicing
     public var github: any GitHubServicing
     public var releases: any ReleaseServicing
+    public var repository: any RepositoryServicing
     public var notifier: any DropNotifying
     /// Set when a service could not start normally (for example, the metadata store could not be
     /// opened and an in-memory store is used instead). Shown to the user.
@@ -20,6 +21,7 @@ public struct ServiceContainer: Sendable {
         auth: any AuthServicing,
         github: any GitHubServicing,
         releases: any ReleaseServicing,
+        repository: any RepositoryServicing,
         notifier: any DropNotifying,
         startupIssue: DROPError? = nil
     ) {
@@ -27,6 +29,7 @@ public struct ServiceContainer: Sendable {
         self.auth = auth
         self.github = github
         self.releases = releases
+        self.repository = repository
         self.notifier = notifier
         self.startupIssue = startupIssue
     }
@@ -35,8 +38,12 @@ public struct ServiceContainer: Sendable {
         ProjectService(github: github, metadata: metadata)
     }
 
+    public var changelog: ChangelogService {
+        ChangelogService(repository: repository, github: github)
+    }
+
     public var drops: DropService {
-        DropService(releases: releases, metadata: metadata, notifier: notifier)
+        DropService(releases: releases, metadata: metadata, notifier: notifier, changelog: changelog)
     }
 
     /// The services the app runs with.
@@ -63,6 +70,7 @@ public struct ServiceContainer: Sendable {
             auth: auth,
             github: LiveGitHubService(client: client),
             releases: LiveReleaseService(client: client),
+            repository: LiveRepositoryService(client: client),
             notifier: UserNotificationDropNotifier(),
             startupIssue: startupIssue
         )
@@ -74,6 +82,7 @@ public struct ServiceContainer: Sendable {
         auth: (any AuthServicing)? = nil,
         github: (any GitHubServicing)? = nil,
         releases: (any ReleaseServicing)? = nil,
+        repository: (any RepositoryServicing)? = nil,
         notifier: (any DropNotifying)? = nil
     ) -> ServiceContainer {
         ServiceContainer(
@@ -81,6 +90,7 @@ public struct ServiceContainer: Sendable {
             auth: auth ?? AuthService(endpoint: nil, secrets: InMemorySecretStore()),
             github: github ?? InMemoryGitHubService(),
             releases: releases ?? InMemoryReleaseService(),
+            repository: repository ?? InMemoryRepositoryService(),
             notifier: notifier ?? RecordingDropNotifier()
         )
     }

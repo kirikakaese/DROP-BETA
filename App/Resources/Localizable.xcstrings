@@ -21,6 +21,16 @@
         }
       }
     },
+    "%lld breaking, %lld features, %lld fixes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld inkompatibel, %2$lld Features, %3$lld Fixes"
+          }
+        }
+      }
+    },
     "About %@": {
       "localizations": {
         "de": {
@@ -121,6 +131,16 @@
         }
       }
     },
+    "Add to CHANGELOG.md through a pull request": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per Pull Request zu CHANGELOG.md hinzufügen"
+          }
+        }
+      }
+    },
     "Added": {
       "localizations": {
         "de": {
@@ -177,6 +197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Changes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Änderungen"
           }
         }
       }
@@ -801,6 +831,16 @@
         }
       }
     },
+    "Last Release": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letztes Release"
+          }
+        }
+      }
+    },
     "Latest": {
       "localizations": {
         "de": {
@@ -817,6 +857,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wird geladen …"
+          }
+        }
+      }
+    },
+    "Major": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Major"
           }
         }
       }
@@ -841,6 +891,26 @@
         }
       }
     },
+    "Minor": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minor"
+          }
+        }
+      }
+    },
+    "Next Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Version"
+          }
+        }
+      }
+    },
     "No GitHub Releases yet.": {
       "localizations": {
         "de": {
@@ -857,6 +927,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Keine Projekte"
+          }
+        }
+      }
+    },
+    "No release yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch kein Release"
+          }
+        }
+      }
+    },
+    "None yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keins"
           }
         }
       }
@@ -901,6 +991,16 @@
         }
       }
     },
+    "Open a pull request against %@ that adds %@ to CHANGELOG.md": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request gegen %1$@ öffnen, der %2$@ zu CHANGELOG.md hinzufügt"
+          }
+        }
+      }
+    },
     "Open on GitHub": {
       "localizations": {
         "de": {
@@ -911,12 +1011,32 @@
         }
       }
     },
+    "Opens a pull request; nothing is pushed to the branch directly.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffnet einen Pull Request; es wird nichts direkt auf den Branch gepusht."
+          }
+        }
+      }
+    },
     "Paste the full or abbreviated SHA (7 to 40 hex characters).": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Füge den vollständigen oder gekürzten SHA ein (7 bis 40 Hex-Zeichen)."
+          }
+        }
+      }
+    },
+    "Patch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Patch"
           }
         }
       }
@@ -1231,6 +1351,16 @@
         }
       }
     },
+    "Since %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seit %@"
+          }
+        }
+      }
+    },
     "Something went wrong.": {
       "localizations": {
         "de": {
@@ -1277,6 +1407,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schritte"
+          }
+        }
+      }
+    },
+    "Suggested Next Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorgeschlagene nächste Version"
           }
         }
       }
@@ -1391,6 +1531,16 @@
         }
       }
     },
+    "Unreleased": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unveröffentlicht"
+          }
+        }
+      }
+    },
     "Update the existing GitHub Release %@": {
       "localizations": {
         "de": {
@@ -1447,6 +1597,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Version"
+          }
+        }
+      }
+    },
+    "View Changelog Pull Request": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changelog-Pull-Request ansehen"
           }
         }
       }

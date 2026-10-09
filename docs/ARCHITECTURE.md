@@ -32,3 +32,7 @@ The app target (`App/Sources`) creates the live `ServiceContainer`, the models a
 - **One repository slug.** DROP's own repository is named only in `Config/Repo.xcconfig`. It
   reaches the code through the `DROPRepositorySlug` Info.plist key (`AppRepository.slug()`) and
   the scripts through `scripts/repo_slug.sh`. CI checks that it matches the repository it runs in.
+- **Changes to repositories go through pull requests.** `ChangelogService` updates CHANGELOG.md
+  on a new `changelog/<tag>` branch and opens a pull request; it never pushes to the default branch.
+  Its commits use the signed-in account's `ID+login@users.noreply.github.com` address, a
+  Conventional Commit message and no trailer.

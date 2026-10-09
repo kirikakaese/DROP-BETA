@@ -1,5 +1,6 @@
 import DROPCore
 import DROPGitHub
+import DROPServices
 import SwiftUI
 
 /// The selected project: the repository, its drops on GitHub, DROP's history and the audit log.
@@ -24,6 +25,9 @@ struct ProjectDetailView: View {
         Form {
             RepositorySection(model: model, project: project)
             if let activity {
+                if let unreleased = activity.unreleased {
+                    UnreleasedSection(changes: unreleased)
+                }
                 ReleasesSection(activity: activity, editing: $editing, deleting: $deleting)
                 HistorySection(activity: activity)
             }
@@ -38,7 +42,7 @@ struct ProjectDetailView: View {
                 current = model.activityModel(for: project)
             }
             activity = current
-            await current.load()
+            await current.load(branch: model.repositories[project.id]?.defaultBranch ?? "main")
         }
         .sheet(item: $editing) { release in
             if let activity {
@@ -88,6 +92,30 @@ private struct RepositorySection: View {
             }
             LabeledContent("Added") {
                 Text(project.addedAt, format: .dateTime.day().month().year())
+            }
+        }
+    }
+}
+
+/// What a drop would contain now, and the version DROP suggests for it.
+private struct UnreleasedSection: View {
+    let changes: UnreleasedChanges
+
+    var body: some View {
+        Section("Unreleased") {
+            LabeledContent("Last Release") {
+                if let since = changes.since {
+                    Text(verbatim: since).monospaced()
+                } else {
+                    Text("None yet")
+                }
+            }
+            LabeledContent("Changes") {
+                Text(changes.notableCount, format: .number)
+            }
+            LabeledContent("Suggested Next Version") {
+                Text(verbatim: changes.suggestion.tagName(for: changes.suggestion.bump, beta: false))
+                    .monospaced()
             }
         }
     }

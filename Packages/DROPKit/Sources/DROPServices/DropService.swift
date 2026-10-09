@@ -15,6 +15,8 @@ public struct DropResult: Sendable, Equatable {
     public let record: DropRecord
     /// Assets GitHub reported no checksum for, so they couldn't be verified.
     public let unverified: [String]
+    /// The pull request that adds the notes to CHANGELOG.md, if one was opened.
+    public let changelogPullRequest: GitHubPullRequest?
 }
 
 /// Plans and performs drops: the tag, the GitHub Release, its assets and `SHA256SUMS.txt`.
@@ -25,17 +27,20 @@ public struct DropService: Sendable {
     let releases: any ReleaseServicing
     let metadata: any MetadataStoring
     let notifier: any DropNotifying
+    let changelog: ChangelogService?
     let now: @Sendable () -> Date
 
     public init(
         releases: any ReleaseServicing,
         metadata: any MetadataStoring,
         notifier: any DropNotifying,
+        changelog: ChangelogService? = nil,
         now: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.releases = releases
         self.metadata = metadata
         self.notifier = notifier
+        self.changelog = changelog
         self.now = now
     }
 
@@ -69,6 +74,9 @@ public struct DropService: Sendable {
         }
         if !request.assets.isEmpty {
             steps.append(.verifyChecksums)
+        }
+        if let base = request.changelogBase {
+            steps.append(.openChangelogPullRequest(tag: request.tagName, base: base))
         }
         return DropPlan(request: request, steps: steps, checksums: checksums)
     }
@@ -168,7 +176,9 @@ public struct DropService: Sendable {
         try? metadata.saveDropRecord(record)
         audit(record, DropWording.doneTitle(version: request.tagName), succeeded: true)
         await notifier.dropped(tag: request.tagName, project: request.slug.description, url: release.htmlURL)
-        return DropResult(release: release, record: record, unverified: run.unverified)
+        return DropResult(
+            release: release, record: record, unverified: run.unverified, changelogPullRequest: run.changelogPullRequest
+        )
     }
 
     private func perform(_ step: DropStep, in run: inout DropRun) async throws {
@@ -192,6 +202,11 @@ public struct DropService: Sendable {
             try await uploadChecksums(replacing: existingID, in: &run)
         case .verifyChecksums:
             try verify(&run)
+        case .openChangelogPullRequest(let tag, let base):
+            guard let changelog else { throw DROPError.somethingWentWrong }
+            run.changelogPullRequest = try await changelog.openPullRequest(
+                slug, base: base, tag: tag, notes: Changelog.demotingHeadings(request.notes)
+            )
         }
     }
 
@@ -254,6 +269,7 @@ private struct DropRun {
     var uploaded: [String: GitHubAsset] = [:]
     var expected: [String: String]
     var unverified: [String] = []
+    var changelogPullRequest: GitHubPullRequest?
 
     init(plan: DropPlan) {
         self.plan = plan
