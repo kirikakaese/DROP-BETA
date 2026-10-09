@@ -41,7 +41,8 @@ struct RepositorySlugTests {
     @Test func roundTripsThroughJSON() throws {
         let slug = Fixtures.slug("kirikakaese/SMP")
         let data = try JSONEncoder().encode(slug)
-        #expect(String(decoding: data, as: UTF8.self) == "\"kirikakaese/SMP\"")
+        // Encoded as a plain "owner/name" string (JSONEncoder may escape the slash, so decode it).
+        #expect(try JSONDecoder().decode(String.self, from: data) == "kirikakaese/SMP")
         #expect(try JSONDecoder().decode(RepositorySlug.self, from: data) == slug)
         #expect(throws: DecodingError.self) {
             try JSONDecoder().decode(RepositorySlug.self, from: Data("\"not a slug\"".utf8))
