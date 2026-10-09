@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+  DROP is not sandboxed yet and needs no entitlements: it only talks to GitHub and the package
+  registries over HTTPS and keeps its data in Application Support and the Keychain. Team-signed
+  builds use the Hardened Runtime without exceptions. Each entitlement added later must be
+  documented in docs/ENTITLEMENTS.md.
+-->
+<dict/>
+</plist>

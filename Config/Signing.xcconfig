@@ -1,0 +1,10 @@
+// Build settings shared by every target. Your own values live in Config/Local.xcconfig,
+// which git ignores; copy Config/Local.xcconfig.example to create it.
+//
+// DEVELOPMENT_TEAM: optional. Without a team, Xcode signs ad-hoc ("Sign to Run Locally"),
+// which is also how releases are built.
+
+DEVELOPMENT_TEAM =
+
+#include "Repo.xcconfig"
+#include? "Local.xcconfig"

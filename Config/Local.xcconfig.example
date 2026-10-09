@@ -1,0 +1,6 @@
+// Copy this file to Config/Local.xcconfig (git ignores it) and fill in your values.
+
+// Optional. Your Team ID, if you want Xcode to sign with your team instead of ad-hoc.
+// Find it in Xcode → Settings → Accounts → your team, or at
+// https://developer.apple.com/account under Membership details.
+DEVELOPMENT_TEAM =

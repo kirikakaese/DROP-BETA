@@ -1,0 +1,259 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ is already in your projects.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist bereits in deinen Projekten."
+          }
+        }
+      }
+    },
+    "About %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über %@"
+          }
+        }
+      }
+    },
+    "Added": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzugefügt"
+          }
+        }
+      }
+    },
+    "Choose a project in the sidebar to see its drops.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle ein Projekt in der Seitenleiste, um seine Drops zu sehen."
+          }
+        }
+      }
+    },
+    "DROP built an invalid GitHub request.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP hat eine ungültige GitHub-Anfrage erstellt."
+          }
+        }
+      }
+    },
+    "DROP could not open its project list.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP konnte seine Projektliste nicht öffnen."
+          }
+        }
+      }
+    },
+    "DROP is using a temporary list for now, so projects you add are not kept. Quit and reopen DROP to try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP verwendet vorerst eine temporäre Liste, hinzugefügte Projekte werden also nicht gespeichert. Beende DROP und öffne es erneut, um es noch einmal zu versuchen."
+          }
+        }
+      }
+    },
+    "DROP: drop new versions to GitHub Releases and package registries.\nReleased under the GNU General Public License v3.0.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP: neue Versionen als GitHub Releases und in Paket-Registries droppen.\nVeröffentlicht unter der GNU General Public License v3.0."
+          }
+        }
+      }
+    },
+    "Drop": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop"
+          }
+        }
+      }
+    },
+    "Drop v%@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop v%@"
+          }
+        }
+      }
+    },
+    "Drop…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop…"
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allgemein"
+          }
+        }
+      }
+    },
+    "GitHub Container Registry": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Container Registry"
+          }
+        }
+      }
+    },
+    "Homebrew Tap": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Homebrew-Tap"
+          }
+        }
+      }
+    },
+    "No Projects": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Projekte"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "Plan the next drop of this project": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den nächsten Drop dieses Projekts planen"
+          }
+        }
+      }
+    },
+    "Project": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projekt"
+          }
+        }
+      }
+    },
+    "Projects": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projekte"
+          }
+        }
+      }
+    },
+    "Repository": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repository"
+          }
+        }
+      }
+    },
+    "Scoop Bucket": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoop-Bucket"
+          }
+        }
+      }
+    },
+    "Select a Project": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle ein Projekt"
+          }
+        }
+      }
+    },
+    "Sign in with GitHub to add your repositories.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich mit GitHub an, um deine Repositories hinzuzufügen."
+          }
+        }
+      }
+    },
+    "Source Code": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quellcode"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "npm": {
+      "shouldTranslate": false
+    }
+  },
+  "version": "1.0"
+}

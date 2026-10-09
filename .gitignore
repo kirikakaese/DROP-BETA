@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# Xcode (the project is generated from project.yml by XcodeGen)
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+build/
+Config/Local.xcconfig
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/*/.build/
+Packages/*/.swiftpm/
+Package.resolved.orig
+
+# Release artifacts
+*.dmg
+*.zip
+dist/
+
+# Never commit signing keys by accident
+*.pem
+*.p8
+*.p12

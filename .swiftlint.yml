@@ -1,0 +1,59 @@
+included:
+  - App
+  - Packages/DROPKit/Sources
+  - Packages/DROPKit/Tests
+excluded:
+  - Packages/DROPKit/.build
+  - Packages/DROPKit/Sources/DROPTestFixtures   # test data
+  - build
+
+disabled_rules:
+  - trailing_comma            # swift-format owns trailing commas
+  - opening_brace             # swift-format owns brace placement
+  - todo                      # TODOs are tracked, not forbidden
+  - sorted_imports            # swift-format's OrderedImports owns import order (case-sensitive)
+
+opt_in_rules:
+  - empty_count
+  - first_where
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - private_over_fileprivate
+  - redundant_nil_coalescing
+
+line_length:
+  warning: 120
+  error: 160
+  ignores_comments: true
+  ignores_urls: true
+
+identifier_name:
+  min_length: 1
+  excluded: [id, i, n, fd]
+
+type_body_length:
+  warning: 400
+  error: 600
+
+cyclomatic_complexity:
+  warning: 15
+  error: 25
+
+function_body_length:
+  warning: 60
+  error: 100
+
+file_length:
+  warning: 600
+  error: 1000
+
+nesting:
+  type_level: 2
+
+function_parameter_count:
+  warning: 6
+  error: 8
+
+large_tuple:
+  warning: 3
+  error: 4

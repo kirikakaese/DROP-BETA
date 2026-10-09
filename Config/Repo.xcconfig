@@ -1,0 +1,6 @@
+// Where DROP itself lives on GitHub, as owner/name. This is the only place the repository is
+// named: Info.plist, the update feed URL, the scripts and the release workflow all read it from
+// here, so renaming the repository is a one-line change. GitHub redirects the old name, so
+// installed copies keep finding their updates after a rename.
+
+DROP_REPO_SLUG = kirikakaese/DROP-BETA
