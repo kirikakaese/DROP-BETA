@@ -32,16 +32,9 @@ enum ScreenshotScenario: String, CaseIterable {
         case .dropForm, .readyToDrop, .dropped:
             projects.startDrop()
             guard let drop = projects.currentDrop else { return }
-            drop.tagName = "v1.0.0"
-            drop.title = "SMP 1.0.0"
-            drop.notes = """
-                ## Features
-                - **Key library:** tags, groups and favorites
-                - Rotate keys from the menu bar
-
-                ## Fixes
-                - Agent no longer asks twice after sleep
-                """
+            await drop.loadSuggestion()
+            drop.title = "SMP \(drop.tagName.dropFirst())"
+            drop.updatesChangelog = true
             drop.addAssets(Self.sampleAssets())
             if self != .dropForm { await drop.review() }
             if self == .dropped { await drop.drop() }

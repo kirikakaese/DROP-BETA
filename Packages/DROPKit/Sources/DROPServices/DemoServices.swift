@@ -41,6 +41,7 @@ extension ServiceContainer {
             auth: AuthService(endpoint: endpoint, secrets: secrets),
             github: github,
             releases: InMemoryReleaseService(releases: demoReleases(now: now)),
+            repository: demoRepository(),
             notifier: RecordingDropNotifier()
         )
     }
@@ -81,6 +82,25 @@ extension ServiceContainer {
                 assets: assets("0.9.0", from: 10)
             ),
         ]
+    }
+
+    /// SMP's history since 0.9.2: the commits the next drop's notes are written from.
+    private static func demoRepository() -> InMemoryRepositoryService {
+        let messages = [
+            "feat(ui): add an app icon and let people choose another key (#21)",
+            "fix(agent): ask once after sleep instead of twice (#23)",
+            "feat(keys)!: store key metadata in the new library format (#24)",
+            "feat(hosts): connect to a host from the menu bar (#25)",
+            "chore: update actions/checkout to v5 (#20)",
+            "perf(library): load large ~/.ssh folders without blocking (#26)",
+        ]
+        var commits = [GitHubCommit(sha: "0920000", message: "fix: 0.9.2 (#19)")]
+        commits += messages.enumerated().map { GitHubCommit(sha: "c0ffee\($0.offset)", message: $0.element) }
+        return InMemoryRepositoryService(
+            commits: commits,
+            tags: ["v0.9.2": "0920000", "v0.9.1": "0910000", "v0.9.0": "0900000"],
+            files: ["CHANGELOG.md": "# Changelog\n"]
+        )
     }
 
     private static func demoHistory(for project: Project, now: Date) -> [DropRecord] {
