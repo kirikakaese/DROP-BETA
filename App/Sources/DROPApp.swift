@@ -12,7 +12,8 @@ struct DROPApp: App {
 
     init() {
         #if DEBUG
-        let services = ScreenshotScenario.requested == nil ? ServiceContainer.live() : .demo()
+        let services = ScreenshotScenario.requested.map { ServiceContainer.demo(account: $0.account) }
+            ?? ServiceContainer.live()
         #else
         let services = ServiceContainer.live()
         #endif

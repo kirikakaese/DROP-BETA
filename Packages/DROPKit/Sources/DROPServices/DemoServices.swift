@@ -4,10 +4,18 @@ import DROPGitHub
 import DROPPersistence
 import Foundation
 
+/// The account state the demo services start in.
+public enum DemoAccount: Sendable {
+    case signedIn
+    case signedOut
+    /// Signed in once, but the refresh token has expired.
+    case sessionEnded
+}
+
 extension ServiceContainer {
-    /// Services with sample data and a signed-in account, for the screenshots CI takes of pull
-    /// requests. Debug builds only; never touches disk, the Keychain or the network.
-    public static func demo(now: Date = Date()) -> ServiceContainer {
+    /// Services with sample data, for the screenshots CI takes of every branch. Debug builds only;
+    /// never touches disk, the Keychain or the network.
+    public static func demo(now: Date = Date(), account: DemoAccount = .signedIn) -> ServiceContainer {
         let day: TimeInterval = 86_400
         let smp = Project(slug: slug("kirikakaese/SMP"), repositoryID: 1001, addedAt: now - 30 * day)
         let evac = Project(slug: slug("kirikakaese/EVAC-BETA"), repositoryID: 1002, addedAt: now - 20 * day)
@@ -18,11 +26,17 @@ extension ServiceContainer {
         }
 
         let secrets = InMemorySecretStore()
-        let tokens = TokenSet(OAuthToken(accessToken: "demo", scopes: ["repo"]), issuedAt: now)
-        if let data = try? JSONEncoder().encode(tokens) {
+        let token: OAuthToken? = switch account {
+        case .signedIn: OAuthToken(accessToken: "demo", scopes: ["repo"])
+        case .signedOut: nil
+        case .sessionEnded:
+            OAuthToken(
+                accessToken: "demo", accessTokenExpiresIn: -60, refreshToken: "demo", refreshTokenExpiresIn: -60
+            )
+        }
+        if let token, let data = try? JSONEncoder().encode(TokenSet(token, issuedAt: now)) {
             try? secrets.setData(data, for: AuthService.keychainAccount)
         }
-        let endpoint = GitHubOAuthEndpoint(clientID: "demo", transport: OfflineTransport(), userAgent: "DROP")
 
         let github = InMemoryGitHubService(
             user: GitHubUser(id: 252_577_764, login: "kirikakaese", name: "Kiri"),
@@ -38,7 +52,7 @@ extension ServiceContainer {
         )
         return ServiceContainer(
             metadata: metadata,
-            auth: AuthService(endpoint: endpoint, secrets: secrets),
+            auth: AuthService(endpoint: DemoOAuthEndpoint(), secrets: secrets),
             github: github,
             releases: InMemoryReleaseService(releases: demoReleases(now: now)),
             repository: demoRepository(),
@@ -169,18 +183,18 @@ extension ServiceContainer {
     }
 }
 
-/// A transport that never connects. Demo services have nothing to send.
-private struct OfflineTransport: HTTPTransport {
-    func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-        throw DROPError.network(details: "Demo mode is offline")
+/// Shows a sign-in code and then waits forever: enough for a screenshot of the sign-in sheet.
+private struct DemoOAuthEndpoint: OAuthEndpoint {
+    func requestDeviceCode(scopes: [String]) async throws -> DeviceAuthorization {
+        guard let url = URL(string: "https://github.com/login/device") else { throw DROPError.somethingWentWrong }
+        return DeviceAuthorization(
+            deviceCode: "demo", userCode: "WDJB-MJHT", verificationURL: url, expiresIn: 900, interval: 5
+        )
     }
 
-    func upload(_ request: URLRequest, fromFile file: URL) async throws -> (Data, HTTPURLResponse) {
-        throw DROPError.network(details: "Demo mode is offline")
-    }
+    func pollForToken(deviceCode: String) async throws -> DevicePollResult { .pending }
 
-    func download(_ request: URLRequest, to destination: URL) async throws -> HTTPURLResponse {
-        throw DROPError.network(details: "Demo mode is offline")
-    }
+    func refresh(refreshToken: String) async throws -> OAuthToken { throw DROPError.sessionExpired }
 }
+
 #endif
