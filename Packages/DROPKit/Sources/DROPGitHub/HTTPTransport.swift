@@ -7,6 +7,8 @@ public protocol HTTPTransport: Sendable {
     func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse)
     /// Sends `request` with the file's contents as the body, streamed from disk.
     func upload(_ request: URLRequest, fromFile file: URL) async throws -> (Data, HTTPURLResponse)
+    /// Downloads the response body to `destination` (large files, never held in memory).
+    func download(_ request: URLRequest, to destination: URL) async throws -> HTTPURLResponse
 }
 
 /// `HTTPTransport` over an ephemeral `URLSession`: no cookies, no cache, HTTPS only, and redirects
@@ -33,6 +35,24 @@ public struct URLSessionTransport: HTTPTransport {
 
     public func upload(_ request: URLRequest, fromFile file: URL) async throws -> (Data, HTTPURLResponse) {
         try await perform(request) { try await session.upload(for: request, fromFile: file) }
+    }
+
+    public func download(_ request: URLRequest, to destination: URL) async throws -> HTTPURLResponse {
+        guard request.url?.scheme == "https" else {
+            throw DROPError(.invalidArgument, whatHappened: String(localized: "DROP built an invalid GitHub request."))
+        }
+        do {
+            let (file, response) = try await session.download(for: request)
+            guard let http = response as? HTTPURLResponse else {
+                throw DROPError.network(details: "Not an HTTP response")
+            }
+            try? FileManager.default.removeItem(at: destination)
+            try FileManager.default.moveItem(at: file, to: destination)
+            return http
+        } catch let error as URLError {
+            if error.code == .cancelled { throw CancellationError() }
+            throw DROPError.network(details: error.localizedDescription)
+        }
     }
 
     private func perform(

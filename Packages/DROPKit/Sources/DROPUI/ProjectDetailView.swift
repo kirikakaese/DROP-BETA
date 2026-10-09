@@ -1,5 +1,6 @@
 import DROPCore
 import DROPGitHub
+import DROPServices
 import SwiftUI
 
 /// The selected project: the repository, its drops on GitHub, DROP's history and the audit log.
@@ -7,6 +8,7 @@ struct ProjectDetailView: View {
     let model: ProjectsModel
     let project: Project
     @State private var activity: ProjectActivityModel?
+    @State private var actions: ProjectActionsModel?
     @State private var editing: GitHubRelease?
     @State private var deleting: GitHubRelease?
 
@@ -24,8 +26,14 @@ struct ProjectDetailView: View {
         Form {
             RepositorySection(model: model, project: project)
             if let activity {
+                if let unreleased = activity.unreleased {
+                    UnreleasedSection(changes: unreleased)
+                }
                 ReleasesSection(activity: activity, editing: $editing, deleting: $deleting)
                 HistorySection(activity: activity)
+            }
+            if let actions {
+                ActionsSections(actions: actions)
             }
         }
         .formStyle(.grouped)
@@ -38,7 +46,9 @@ struct ProjectDetailView: View {
                 current = model.activityModel(for: project)
             }
             activity = current
-            await current.load()
+            if actions?.project.id != project.id { actions = model.actionsModel(for: project) }
+            await current.load(branch: model.repositories[project.id]?.defaultBranch ?? "main")
+            await actions?.load()
         }
         .sheet(item: $editing) { release in
             if let activity {
@@ -62,6 +72,7 @@ struct ProjectDetailView: View {
             Text("Its assets are deleted too. This can't be undone.")
         }
         .errorAlert(Binding(get: { activity?.error }, set: { activity?.error = $0 }))
+        .modifier(OptionalActionsSheets(actions: actions))
     }
 }
 
@@ -88,6 +99,30 @@ private struct RepositorySection: View {
             }
             LabeledContent("Added") {
                 Text(project.addedAt, format: .dateTime.day().month().year())
+            }
+        }
+    }
+}
+
+/// What a drop would contain now, and the version DROP suggests for it.
+private struct UnreleasedSection: View {
+    let changes: UnreleasedChanges
+
+    var body: some View {
+        Section("Unreleased") {
+            LabeledContent("Last Release") {
+                if let since = changes.since {
+                    Text(verbatim: since).monospaced()
+                } else {
+                    Text("None yet")
+                }
+            }
+            LabeledContent("Changes") {
+                Text(changes.notableCount, format: .number)
+            }
+            LabeledContent("Suggested Next Version") {
+                Text(verbatim: changes.suggestion.tagName(for: changes.suggestion.bump, beta: false))
+                    .monospaced()
             }
         }
     }
@@ -268,6 +303,19 @@ private struct ReleaseEditSheet: View {
             notes = release.body ?? ""
             isDraft = release.isDraft
             isPrerelease = release.isPrerelease
+        }
+    }
+}
+
+/// `ActionsSheets` once the project's actions are loaded.
+private struct OptionalActionsSheets: ViewModifier {
+    let actions: ProjectActionsModel?
+
+    @ViewBuilder func body(content: Content) -> some View {
+        if let actions {
+            content.modifier(ActionsSheets(actions: actions))
+        } else {
+            content
         }
     }
 }

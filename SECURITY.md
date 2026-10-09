@@ -45,6 +45,9 @@ Until 1.0, only the latest release receives security fixes.
 | Publishing something you didn't intend | Every write is listed on the "Ready to Drop" plan first; nothing touches the network until you press **Drop**. |
 | Racing or overwriting existing automation | Targets an existing workflow owns are marked External and only verified, never written. Switching one to Managed needs a confirmation that names the workflow. |
 | Changes to shared repositories | Writes to tap and bucket repositories go through pull requests unless you opt into direct pushes per target. |
+| Token sent to GitHub's storage | Logs and artifacts redirect to GitHub's storage; DROP follows those links without the token, over HTTPS only. |
+| Crafted artifact archives | Artifacts are unpacked with `ditto` into a fresh temporary folder; links are removed and only regular files inside that folder are used. |
+| Broader access than needed | The `workflow` scope is requested only when you let DROP add a workflow file, through a new sign-in that names it. |
 | Malicious API responses or repository contents | All external input is size-capped and decoded into typed models; commit messages and workflow files are parsed, never executed. |
 
 ### Out of scope

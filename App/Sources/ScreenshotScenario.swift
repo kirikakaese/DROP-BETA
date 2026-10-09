@@ -7,45 +7,92 @@ import DROPUI
 /// Puts a debug build into a fixed state with sample data, for the screenshots CI takes of every
 /// branch (scripts/screenshots.sh). Start the app with `-DROPScreenshot <scenario>`.
 enum ScreenshotScenario: String, CaseIterable {
+    case signedOut = "signed-out"
+    case signIn = "sign-in"
+    case sessionEnded = "session-ended"
     case projects
+    case addProject = "add-project"
     case dropForm = "drop-form"
     case readyToDrop = "ready-to-drop"
     case dropped
-    case account
+    case run
+    case runWorkflow = "run-workflow"
+    case releaseWorkflow = "release-workflow"
+    case settingsGeneral = "settings-general"
+    case settingsAccount = "settings-account"
 
     static var requested: ScreenshotScenario? {
         UserDefaults.standard.string(forKey: "DROPScreenshot").flatMap(Self.init(rawValue:))
     }
 
+    /// The account the demo services start with.
+    var account: DemoAccount {
+        switch self {
+        case .signedOut, .signIn: .signedOut
+        case .sessionEnded: .sessionEnded
+        default: .signedIn
+        }
+    }
+
     @MainActor
     func prepare(_ projects: ProjectsModel) async {
         NSApp.activate()
+        Self.enlargeMainWindow()
         projects.load()
         await projects.account.load()
         await projects.refreshFromGitHub()
-        projects.selection = projects.projects.first?.id
+        if account == .signedIn { projects.selection = projects.projects.first?.id }
         switch self {
-        case .projects:
+        case .signedOut, .sessionEnded, .projects:
             break
-        case .account:
+        case .signIn:
+            projects.account.signIn()
+        case .addProject:
+            projects.isAddingProject = true
+        case .settingsGeneral, .settingsAccount:
+            UserDefaults.standard.set(self == .settingsGeneral ? "general" : "account", forKey: "settingsTab")
             NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        case .run, .runWorkflow, .releaseWorkflow:
+            await prepareActions(projects)
         case .dropForm, .readyToDrop, .dropped:
-            projects.startDrop()
-            guard let drop = projects.currentDrop else { return }
-            drop.tagName = "v1.0.0"
-            drop.title = "SMP 1.0.0"
-            drop.notes = """
-                ## Features
-                - **Key library:** tags, groups and favorites
-                - Rotate keys from the menu bar
-
-                ## Fixes
-                - Agent no longer asks twice after sleep
-                """
-            drop.addAssets(Self.sampleAssets())
-            if self != .dropForm { await drop.review() }
-            if self == .dropped { await drop.drop() }
+            await prepareDrop(projects)
         }
+    }
+
+    @MainActor
+    private func prepareActions(_ projects: ProjectsModel) async {
+        guard let project = projects.selectedProject else { return }
+        let actions = projects.actionsModel(for: project)
+        await actions.load()
+        switch self {
+        case .run: actions.openRun = actions.runs.first
+        case .runWorkflow: actions.dispatching = actions.workflows.first { $0.triggers.dispatch }?.workflow
+        default: actions.isProposingWorkflow = true
+        }
+    }
+
+    @MainActor
+    private func prepareDrop(_ projects: ProjectsModel) async {
+        projects.startDrop()
+        guard let drop = projects.currentDrop else { return }
+        await drop.loadSuggestion()
+        drop.title = "SMP \(drop.tagName.dropFirst())"
+        drop.updatesChangelog = true
+        drop.addAssets(Self.sampleAssets())
+        if self != .dropForm { await drop.review() }
+        if self == .dropped { await drop.drop() }
+    }
+
+    /// Big enough that the project view shows most of its sections.
+    @MainActor
+    private static func enlargeMainWindow() {
+        guard let window = NSApp.windows.first(where: { $0.isVisible && $0.canBecomeMain }),
+            let screen = window.screen ?? NSScreen.main
+        else { return }
+        let visible = screen.visibleFrame
+        let size = NSSize(width: min(1240, visible.width - 40), height: min(1000, visible.height - 20))
+        let origin = NSPoint(x: visible.minX + 20, y: visible.maxY - size.height)
+        window.setFrame(NSRect(origin: origin, size: size), display: true)
     }
 
     /// Small files named like real release assets.

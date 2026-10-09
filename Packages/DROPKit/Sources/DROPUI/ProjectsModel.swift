@@ -42,6 +42,10 @@ public final class ProjectsModel {
 
     /// The drop in progress or being prepared, shown as a sheet.
     public var currentDrop: DropModel?
+    /// Files from workflow artifacts waiting to be added to a project's next drop.
+    public private(set) var pendingAssets: [Project.ID: [URL]] = [:]
+    /// One Actions model per project, so an open run or sheet survives switching projects.
+    @ObservationIgnored private var actionsModels: [Project.ID: ProjectActionsModel] = [:]
     /// Changes whenever a drop finishes, so the project's activity reloads.
     public private(set) var dropsFinished = 0
 
@@ -63,6 +67,28 @@ public final class ProjectsModel {
         ) { [weak self] in
             self?.dropsFinished += 1
         }
+        if let files = pendingAssets.removeValue(forKey: project.id) {
+            currentDrop?.addAssets(files)
+        }
+    }
+
+    /// Adds files to the project's next drop (from "Attach to Next Drop" on a workflow run).
+    public func attachToNextDrop(_ files: [URL], project: Project.ID) {
+        pendingAssets[project, default: []] += files
+    }
+
+    public func actionsModel(for project: Project) -> ProjectActionsModel {
+        if let model = actionsModels[project.id] { return model }
+        let model = ProjectActionsModel(
+            project: project,
+            defaultBranch: repositories[project.id]?.defaultBranch ?? "main",
+            services: services,
+            account: account
+        ) { [weak self] files in
+            self?.attachToNextDrop(files, project: project.id)
+        }
+        actionsModels[project.id] = model
+        return model
     }
 
     public func activityModel(for project: Project) -> ProjectActivityModel {

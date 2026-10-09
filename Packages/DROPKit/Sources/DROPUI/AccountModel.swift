@@ -24,6 +24,8 @@ public final class AccountModel {
     public var error: DROPError?
 
     @ObservationIgnored var signInTask: Task<Void, Never>?
+    /// Where to go back to when signing in is cancelled or fails.
+    @ObservationIgnored private var phaseBeforeSignIn: Phase = .signedOut
     private let services: ServiceContainer
 
     public init(services: ServiceContainer) {
@@ -50,15 +52,27 @@ public final class AccountModel {
     }
 
     /// Starts device flow. The code appears in `pendingAuthorization` until it is approved.
-    public func signIn() {
+    public func signIn(scopes: [String] = OAuthConfiguration.signInScopes) {
+        if pendingAuthorization == nil {
+            switch phase {
+            case .signedIn, .sessionExpired: phaseBeforeSignIn = phase
+            default: phaseBeforeSignIn = .signedOut
+            }
+        }
         signInTask?.cancel()
-        signInTask = Task { await runSignIn() }
+        signInTask = Task { await runSignIn(scopes: scopes) }
+    }
+
+    /// Whether the account may change workflow files. `true` when GitHub didn't list scopes.
+    public func canChangeWorkflows() async -> Bool {
+        let scopes = await services.auth.grantedScopes()
+        return scopes.isEmpty || scopes.contains("workflow")
     }
 
     public func cancelSignIn() {
         signInTask?.cancel()
         signInTask = nil
-        if case .waitingForApproval = phase { phase = .signedOut }
+        if case .waitingForApproval = phase { phase = phaseBeforeSignIn }
     }
 
     public func signOut() async {
@@ -90,10 +104,10 @@ public final class AccountModel {
         }
     }
 
-    private func runSignIn() async {
-        let previous = phase == .sessionExpired ? Phase.sessionExpired : .signedOut
+    private func runSignIn(scopes: [String]) async {
+        let previous = phaseBeforeSignIn
         do {
-            let authorization = try await services.auth.startSignIn()
+            let authorization = try await services.auth.startSignIn(scopes: scopes)
             phase = .waitingForApproval(authorization)
             try await services.auth.finishSignIn(authorization)
             try Task.checkCancellation()

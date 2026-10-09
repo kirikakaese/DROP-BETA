@@ -33,6 +33,13 @@ public final class FakeTransport: HTTPTransport, Sendable {
         return try await send(withBody)
     }
 
+    /// Answers like `send` and writes the body to `destination`.
+    public func download(_ request: URLRequest, to destination: URL) async throws -> HTTPURLResponse {
+        let (data, response) = try await send(request)
+        try data.write(to: destination)
+        return response
+    }
+
     /// A JSON body from a string literal.
     public static func json(_ text: String) -> Data { Data(text.utf8) }
 

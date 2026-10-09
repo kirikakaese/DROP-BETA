@@ -21,6 +21,16 @@
         }
       }
     },
+    "%lld breaking, %lld features, %lld fixes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld inkompatibel, %2$lld Features, %3$lld Fixes"
+          }
+        }
+      }
+    },
     "About %@": {
       "localizations": {
         "de": {
@@ -111,12 +121,42 @@
         }
       }
     },
+    "Add a Release Workflow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Release-Workflow hinzufügen"
+          }
+        }
+      }
+    },
+    "Add a Release Workflow…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Release-Workflow hinzufügen …"
+          }
+        }
+      }
+    },
     "Add a repository to start dropping.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Füge ein Repository hinzu, um mit dem Droppen zu beginnen."
+          }
+        }
+      }
+    },
+    "Add to CHANGELOG.md through a pull request": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per Pull Request zu CHANGELOG.md hinzufügen"
           }
         }
       }
@@ -141,12 +181,42 @@
         }
       }
     },
+    "Artifacts": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Artefakte"
+          }
+        }
+      }
+    },
     "Assets": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Assets"
+          }
+        }
+      }
+    },
+    "Attach to Next Drop": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An nächsten Drop anhängen"
+          }
+        }
+      }
+    },
+    "Attached": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angehängt"
           }
         }
       }
@@ -177,6 +247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Changes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Änderungen"
           }
         }
       }
@@ -331,6 +411,16 @@
         }
       }
     },
+    "DROP could not unpack the artifact.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP konnte das Artefakt nicht entpacken."
+          }
+        }
+      }
+    },
     "DROP could not use the Keychain.": {
       "localizations": {
         "de": {
@@ -347,6 +437,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "DROP verwendet vorerst eine temporäre Liste, hinzugefügte Projekte werden also nicht gespeichert. Beende DROP und öffne es erneut, um es noch einmal zu versuchen."
+          }
+        }
+      }
+    },
+    "DROP opens a pull request adding %@. Replace its build step before merging.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP öffnet einen Pull Request, der %@ hinzufügt. Ersetze den Build-Schritt vor dem Mergen."
           }
         }
       }
@@ -731,6 +831,16 @@
         }
       }
     },
+    "GitHub only lets DROP add workflow files with the workflow permission. Sign in again to grant it.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub lässt DROP Workflow-Dateien nur mit der workflow-Berechtigung hinzufügen. Melde dich erneut an, um sie zu erteilen."
+          }
+        }
+      }
+    },
     "GitHub refused the request (HTTP %lld).": {
       "localizations": {
         "de": {
@@ -801,6 +911,16 @@
         }
       }
     },
+    "Last Release": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letztes Release"
+          }
+        }
+      }
+    },
     "Latest": {
       "localizations": {
         "de": {
@@ -817,6 +937,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wird geladen …"
+          }
+        }
+      }
+    },
+    "Major": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Major"
           }
         }
       }
@@ -841,6 +971,26 @@
         }
       }
     },
+    "Minor": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minor"
+          }
+        }
+      }
+    },
+    "Next Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Version"
+          }
+        }
+      }
+    },
     "No GitHub Releases yet.": {
       "localizations": {
         "de": {
@@ -857,6 +1007,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Keine Projekte"
+          }
+        }
+      }
+    },
+    "No release yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch kein Release"
+          }
+        }
+      }
+    },
+    "No runs yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Läufe."
+          }
+        }
+      }
+    },
+    "None yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keins"
           }
         }
       }
@@ -901,6 +1081,26 @@
         }
       }
     },
+    "Open Pull Request": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request öffnen"
+          }
+        }
+      }
+    },
+    "Open a pull request against %@ that adds %@ to CHANGELOG.md": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request gegen %1$@ öffnen, der %2$@ zu CHANGELOG.md hinzufügt"
+          }
+        }
+      }
+    },
     "Open on GitHub": {
       "localizations": {
         "de": {
@@ -911,12 +1111,42 @@
         }
       }
     },
+    "Opens a pull request with a workflow that builds every tag for six platforms.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffnet einen Pull Request mit einem Workflow, der jeden Tag für sechs Plattformen baut."
+          }
+        }
+      }
+    },
+    "Opens a pull request; nothing is pushed to the branch directly.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffnet einen Pull Request; es wird nichts direkt auf den Branch gepusht."
+          }
+        }
+      }
+    },
     "Paste the full or abbreviated SHA (7 to 40 hex characters).": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Füge den vollständigen oder gekürzten SHA ein (7 bis 40 Hex-Zeichen)."
+          }
+        }
+      }
+    },
+    "Patch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Patch"
           }
         }
       }
@@ -1011,6 +1241,16 @@
         }
       }
     },
+    "Recent Runs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letzte Läufe"
+          }
+        }
+      }
+    },
     "Release Notes": {
       "localizations": {
         "de": {
@@ -1081,6 +1321,56 @@
         }
       }
     },
+    "Run %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ starten"
+          }
+        }
+      }
+    },
+    "Run Workflow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workflow starten"
+          }
+        }
+      }
+    },
+    "Runs on every tag": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Läuft bei jedem Tag"
+          }
+        }
+      }
+    },
+    "Runs on tags %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Läuft bei Tags %@"
+          }
+        }
+      }
+    },
+    "Run…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starten …"
+          }
+        }
+      }
+    },
     "Same as the tag": {
       "localizations": {
         "de": {
@@ -1141,12 +1431,32 @@
         }
       }
     },
+    "Show Log": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log anzeigen"
+          }
+        }
+      }
+    },
     "Sign In Again": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Erneut anmelden"
+          }
+        }
+      }
+    },
+    "Sign In Again with Workflow Access": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit Workflow-Zugriff erneut anmelden"
           }
         }
       }
@@ -1231,6 +1541,16 @@
         }
       }
     },
+    "Since %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seit %@"
+          }
+        }
+      }
+    },
     "Something went wrong.": {
       "localizations": {
         "de": {
@@ -1277,6 +1597,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schritte"
+          }
+        }
+      }
+    },
+    "Suggested Next Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorgeschlagene nächste Version"
           }
         }
       }
@@ -1351,6 +1681,26 @@
         }
       }
     },
+    "This repository already has %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Repository hat bereits %@."
+          }
+        }
+      }
+    },
+    "This repository has no workflows yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Repository hat noch keine Workflows."
+          }
+        }
+      }
+    },
     "Title": {
       "localizations": {
         "de": {
@@ -1387,6 +1737,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Zwei Assets heißen „%@“."
+          }
+        }
+      }
+    },
+    "Unreleased": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unveröffentlicht"
           }
         }
       }
@@ -1451,6 +1811,26 @@
         }
       }
     },
+    "View Changelog Pull Request": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changelog-Pull-Request ansehen"
+          }
+        }
+      }
+    },
+    "View Pull Request": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request ansehen"
+          }
+        }
+      }
+    },
     "View on GitHub": {
       "localizations": {
         "de": {
@@ -1487,6 +1867,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Warte darauf, dass du DROP auf GitHub bestätigst …"
+          }
+        }
+      }
+    },
+    "Workflows": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workflows"
           }
         }
       }

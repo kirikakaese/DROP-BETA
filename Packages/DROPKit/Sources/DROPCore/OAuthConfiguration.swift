@@ -13,6 +13,10 @@ public enum OAuthConfiguration {
     /// pull requests in public and private repositories.
     public static let signInScopes = ["repo"]
 
+    /// The scopes for adding a workflow file: GitHub requires `workflow` to change anything in
+    /// `.github/workflows`. DROP asks for it only when you let it add one.
+    public static let workflowScopes = ["repo", "workflow"]
+
     /// The Client ID from the bundle's Info.plist, or `nil` if the build has none.
     public static func clientID(in bundle: Bundle = .main) -> String? {
         guard let value = bundle.object(forInfoDictionaryKey: infoPlistKey) as? String else { return nil }

@@ -31,7 +31,21 @@ public final class DropModel {
     public var targetsCommit = false
     public var commitSHA = ""
     public var isDraft = false
-    public var isPrerelease = false
+    /// "Drop a Beta": a prerelease, suggested as the next `-beta.N`.
+    public var isPrerelease = false {
+        didSet { applySuggestion() }
+    }
+    /// The bump for the suggested version; starts at what the commits ask for.
+    public var bump: VersionBump = .patch {
+        didSet { applySuggestion() }
+    }
+    /// Whether to open a pull request that adds the notes to CHANGELOG.md.
+    public var updatesChangelog = false
+    /// The commits since the last release, once loaded.
+    public private(set) var changes: UnreleasedChanges?
+    private var suggestedTag: String?
+    private var suggestedNotes: String?
+    private let defaultBranch: String
     public private(set) var assets: [DropAsset] = []
     public var includesChecksums = true
     public private(set) var branches: [GitHubBranch] = []
@@ -56,6 +70,7 @@ public final class DropModel {
         self.account = account
         self.onFinish = onFinish
         targetBranch = repository?.defaultBranch ?? "main"
+        defaultBranch = repository?.defaultBranch ?? "main"
     }
 
     /// The sheet's title in each stage.
@@ -90,8 +105,45 @@ public final class DropModel {
             isDraft: isDraft,
             isPrerelease: isPrerelease,
             assets: assets,
-            includesChecksums: includesChecksums
+            includesChecksums: includesChecksums,
+            changelogBase: updatesChangelog ? (targetsCommit ? defaultBranch : targetBranch) : nil
         )
+    }
+
+    /// "Since v1.2.0: 2 features, 1 fix", for the version section of the form.
+    public var suggestionSummary: String? {
+        guard let changes else { return nil }
+        let since = changes.since.map { String(localized: "Since \($0)") } ?? String(localized: "No release yet")
+        let counts = String(localized: """
+            \(changes.breakingCount) breaking, \(changes.count(ofType: "feat")) features, \
+            \(changes.count(ofType: "fix")) fixes
+            """)
+        return "\(since): \(counts)"
+    }
+
+    /// Loads the commits since the last release and fills in the suggested tag and notes. Anything
+    /// you already typed stays as it is.
+    public func loadSuggestion() async {
+        do {
+            let branch = targetsCommit ? defaultBranch : targetBranch
+            changes = try await services.changelog.unreleased(project.slug, branch: branch)
+            if let changes { bump = changes.suggestion.bump }
+            applySuggestion()
+        } catch {
+            formError = account.filter(error)
+        }
+    }
+
+    private func applySuggestion() {
+        guard let changes else { return }
+        if tagName.isEmpty || tagName == suggestedTag {
+            tagName = changes.suggestion.tagName(for: bump, beta: isPrerelease)
+            suggestedTag = tagName
+        }
+        if notes.isEmpty || notes == suggestedNotes {
+            notes = services.changelog.notes(changes, slug: project.slug, tag: tagName)
+            suggestedNotes = notes
+        }
     }
 
     public func loadBranches() async {

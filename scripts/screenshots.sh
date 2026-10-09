@@ -31,9 +31,18 @@ capture() {
     echo "Captured $name"
 }
 
-capture 1-projects projects all
-capture 2-drop-form drop-form all
-capture 3-ready-to-drop ready-to-drop all
-capture 4-dropped dropped all
-capture 5-account account front
-capture 6-projects-de projects all -AppleLanguages "(de)" -AppleLocale de_DE
+capture 01-signed-out signed-out all
+capture 02-sign-in sign-in all
+capture 03-session-ended session-ended all
+capture 04-projects projects all
+capture 05-add-project add-project all
+capture 06-drop-form drop-form all
+capture 07-ready-to-drop ready-to-drop all
+capture 08-dropped dropped all
+capture 09-run run all
+capture 10-run-workflow run-workflow all
+capture 11-release-workflow release-workflow all
+capture 12-settings-general settings-general front
+capture 13-settings-account settings-account front
+capture 14-projects-de projects all -AppleLanguages "(de)" -AppleLocale de_DE
+capture 15-drop-form-de drop-form all -AppleLanguages "(de)" -AppleLocale de_DE

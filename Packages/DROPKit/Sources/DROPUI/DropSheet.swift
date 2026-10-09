@@ -30,7 +30,10 @@ struct DropSheet: View {
                 .padding()
         }
         .frame(width: 600, height: 640)
-        .task { await model.loadBranches() }
+        .task {
+            await model.loadBranches()
+            await model.loadSuggestion()
+        }
         .interactiveDismissDisabled(model.isRunning)
     }
 
@@ -77,6 +80,9 @@ struct DropSheet: View {
                 if let url = result.release.htmlURL {
                     Link("View on GitHub", destination: url)
                 }
+                if let url = result.changelogPullRequest?.htmlURL {
+                    Link("View Changelog Pull Request", destination: url)
+                }
                 Spacer()
                 Button("Done", action: onClose)
                     .keyboardShortcut(.defaultAction)
@@ -97,10 +103,7 @@ struct DropFormView: View {
 
     var body: some View {
         Form {
-            Section {
-                TextField("Tag", text: $model.tagName, prompt: Text(verbatim: "v1.2.3"))
-                TextField("Title", text: $model.title, prompt: Text("Same as the tag"))
-            }
+            VersionSection(model: model)
             Section {
                 Picker("Branch", selection: $model.targetBranch) {
                     ForEach(model.branches) { branch in
@@ -131,6 +134,8 @@ struct DropFormView: View {
             Section("Release Notes") {
                 MarkdownEditor(text: $model.notes)
                     .frame(minHeight: 140)
+                Toggle("Add to CHANGELOG.md through a pull request", isOn: $model.updatesChangelog)
+                    .help("Opens a pull request; nothing is pushed to the branch directly.")
             }
             AssetsSection(model: model, isImporting: $isImporting)
         }
@@ -142,6 +147,31 @@ struct DropFormView: View {
             allowsMultipleSelection: true
         ) { result in
             if case .success(let urls) = result { model.addAssets(urls) }
+        }
+    }
+}
+
+/// The suggested next version, the tag and the title.
+private struct VersionSection: View {
+    @Bindable var model: DropModel
+
+    var body: some View {
+        Section {
+            if model.changes != nil {
+                Picker("Next Version", selection: $model.bump) {
+                    ForEach(VersionBump.allCases.reversed(), id: \.self) { bump in
+                        Text(bump.title).tag(bump)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+            TextField("Tag", text: $model.tagName, prompt: Text(verbatim: "v1.2.3"))
+            TextField("Title", text: $model.title, prompt: Text("Same as the tag"))
+        } footer: {
+            if let summary = model.suggestionSummary {
+                Text(verbatim: summary)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }
