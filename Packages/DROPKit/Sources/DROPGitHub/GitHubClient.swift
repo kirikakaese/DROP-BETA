@@ -25,13 +25,21 @@ public struct GitHubClient: Sendable {
     /// Sends the request and returns the body of a successful (2xx) response.
     public func send(_ request: GitHubRequest) async throws -> GitHubResponse {
         var token = try await tokens.accessToken()
-        var (data, response) = try await transport.send(request.urlRequest(token: token, userAgent: userAgent))
+        var (data, response) = try await perform(request, token: token)
         if response.statusCode == 401 {
             token = try await tokens.accessToken(replacingRejected: token)
-            (data, response) = try await transport.send(request.urlRequest(token: token, userAgent: userAgent))
+            (data, response) = try await perform(request, token: token)
         }
         try Self.check(response, data: data)
         return GitHubResponse(data: data, response: response)
+    }
+
+    private func perform(_ request: GitHubRequest, token: String) async throws -> (Data, HTTPURLResponse) {
+        let urlRequest = try request.urlRequest(token: token, userAgent: userAgent)
+        if let file = request.uploadFile {
+            return try await transport.upload(urlRequest, fromFile: file)
+        }
+        return try await transport.send(urlRequest)
     }
 
     /// Sends the request and decodes the JSON body.
@@ -117,7 +125,7 @@ public struct GitHubResponse: Sendable {
             guard pieces.count >= 2, pieces.dropFirst().contains(#"rel="next""#),
                 pieces[0].hasPrefix("<"), pieces[0].hasSuffix(">"),
                 let components = URLComponents(string: String(pieces[0].dropFirst().dropLast())),
-                components.scheme == "https", components.host == GitHubRequest.apiBaseURL?.host()
+                components.scheme == "https", components.host == GitHubRequest.Host.api.rawValue
             else { continue }
             return GitHubRequest(path: components.percentEncodedPath, query: components.queryItems ?? [])
         }

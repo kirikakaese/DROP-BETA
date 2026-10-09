@@ -9,7 +9,16 @@ public protocol MetadataStoring: Sendable {
     /// Adds a project or updates the one with the same ID. Throws `alreadyExists` if another
     /// project has the same repository.
     func saveProject(_ project: Project) throws
+    /// Deletes the project with its drop history and audit log.
     func deleteProject(id: UUID) throws
+
+    /// The project's drops, newest first.
+    func dropRecords(projectID: UUID) throws -> [DropRecord]
+    /// Adds a drop or updates the one with the same ID.
+    func saveDropRecord(_ record: DropRecord) throws
+    /// The project's audit log, newest first.
+    func auditEntries(projectID: UUID, limit: Int) throws -> [AuditEntry]
+    func appendAuditEntry(_ entry: AuditEntry) throws
 }
 
 /// `MetadataStoring` backed by SQLite through GRDB.
@@ -55,6 +64,31 @@ public final class GRDBMetadataStore: MetadataStoring, Sendable {
                 table.add(column: "repositoryID", .integer)
             }
         }
+        // Drop history and audit log. No secrets: tags, steps, outcomes and links only.
+        migrator.registerMigration("v3") { db in
+            try db.create(table: "dropRecord") { table in
+                table.primaryKey("id", .text)
+                table.column("projectID", .text).notNull().indexed()
+                    .references("project", onDelete: .cascade)
+                table.column("tagName", .text).notNull()
+                table.column("isDraft", .boolean).notNull()
+                table.column("isPrerelease", .boolean).notNull()
+                table.column("startedAt", .datetime).notNull()
+                table.column("finishedAt", .datetime)
+                table.column("outcome", .text)
+                table.column("failedStep", .text)
+                table.column("releaseURL", .text)
+            }
+            try db.create(table: "auditEntry") { table in
+                table.primaryKey("id", .text)
+                table.column("projectID", .text).notNull().indexed()
+                    .references("project", onDelete: .cascade)
+                table.column("dropID", .text)
+                table.column("date", .datetime).notNull()
+                table.column("message", .text).notNull()
+                table.column("succeeded", .boolean).notNull()
+            }
+        }
         return migrator
     }
 
@@ -80,6 +114,33 @@ public final class GRDBMetadataStore: MetadataStoring, Sendable {
         _ = try database.write { db in
             try ProjectRecord.deleteOne(db, key: id.uuidString)
         }
+    }
+
+    public func dropRecords(projectID: UUID) throws -> [DropRecord] {
+        try database.read { db in
+            try DropRow.filter(Column("projectID") == projectID.uuidString)
+                .order(Column("startedAt").desc)
+                .fetchAll(db)
+                .compactMap(\.record)
+        }
+    }
+
+    public func saveDropRecord(_ record: DropRecord) throws {
+        try database.write { db in try DropRow(record).save(db) }
+    }
+
+    public func auditEntries(projectID: UUID, limit: Int) throws -> [AuditEntry] {
+        try database.read { db in
+            try AuditRow.filter(Column("projectID") == projectID.uuidString)
+                .order(Column("date").desc)
+                .limit(limit)
+                .fetchAll(db)
+                .compactMap(\.entry)
+        }
+    }
+
+    public func appendAuditEntry(_ entry: AuditEntry) throws {
+        try database.write { db in try AuditRow(entry).insert(db) }
     }
 }
 

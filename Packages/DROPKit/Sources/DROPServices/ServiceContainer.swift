@@ -9,6 +9,8 @@ public struct ServiceContainer: Sendable {
     public var metadata: any MetadataStoring
     public var auth: any AuthServicing
     public var github: any GitHubServicing
+    public var releases: any ReleaseServicing
+    public var notifier: any DropNotifying
     /// Set when a service could not start normally (for example, the metadata store could not be
     /// opened and an in-memory store is used instead). Shown to the user.
     public var startupIssue: DROPError?
@@ -17,16 +19,24 @@ public struct ServiceContainer: Sendable {
         metadata: any MetadataStoring,
         auth: any AuthServicing,
         github: any GitHubServicing,
+        releases: any ReleaseServicing,
+        notifier: any DropNotifying,
         startupIssue: DROPError? = nil
     ) {
         self.metadata = metadata
         self.auth = auth
         self.github = github
+        self.releases = releases
+        self.notifier = notifier
         self.startupIssue = startupIssue
     }
 
     public var projects: ProjectService {
         ProjectService(github: github, metadata: metadata)
+    }
+
+    public var drops: DropService {
+        DropService(releases: releases, metadata: metadata, notifier: notifier)
     }
 
     /// The services the app runs with.
@@ -38,30 +48,40 @@ public struct ServiceContainer: Sendable {
             GitHubOAuthEndpoint(clientID: $0, transport: transport, userAgent: userAgent)
         }
         let auth = AuthService(endpoint: endpoint, secrets: KeychainSecretStore(service: "\(Log.subsystem).github"))
-        let github = LiveGitHubService(client: GitHubClient(transport: transport, tokens: auth, userAgent: userAgent))
+        let client = GitHubClient(transport: transport, tokens: auth, userAgent: userAgent)
+        let metadata: any MetadataStoring
+        var startupIssue: DROPError?
         do {
-            return ServiceContainer(metadata: try GRDBMetadataStore.live(), auth: auth, github: github)
+            metadata = try GRDBMetadataStore.live()
         } catch {
             Log.persistence.error("Could not open the metadata store: \(error.localizedDescription, privacy: .public)")
-            return ServiceContainer(
-                metadata: InMemoryMetadataStore(),
-                auth: auth,
-                github: github,
-                startupIssue: .storageUnavailable(details: error.localizedDescription)
-            )
+            metadata = InMemoryMetadataStore()
+            startupIssue = .storageUnavailable(details: error.localizedDescription)
         }
+        return ServiceContainer(
+            metadata: metadata,
+            auth: auth,
+            github: LiveGitHubService(client: client),
+            releases: LiveReleaseService(client: client),
+            notifier: UserNotificationDropNotifier(),
+            startupIssue: startupIssue
+        )
     }
 
     /// In-memory services for previews and tests. Never touches disk, the Keychain or the network.
     public static func preview(
         projects: [Project] = [],
         auth: (any AuthServicing)? = nil,
-        github: (any GitHubServicing)? = nil
+        github: (any GitHubServicing)? = nil,
+        releases: (any ReleaseServicing)? = nil,
+        notifier: (any DropNotifying)? = nil
     ) -> ServiceContainer {
         ServiceContainer(
             metadata: InMemoryMetadataStore(projects: projects),
             auth: auth ?? AuthService(endpoint: nil, secrets: InMemorySecretStore()),
-            github: github ?? InMemoryGitHubService()
+            github: github ?? InMemoryGitHubService(),
+            releases: releases ?? InMemoryReleaseService(),
+            notifier: notifier ?? RecordingDropNotifier()
         )
     }
 }

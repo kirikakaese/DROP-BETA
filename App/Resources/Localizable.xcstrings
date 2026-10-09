@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ %@ stopped at “%@”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ %2$@ wurde bei „%3$@“ angehalten."
+          }
+        }
+      }
+    },
     "%@ is already in your projects.": {
       "localizations": {
         "de": {
@@ -31,12 +41,42 @@
         }
       }
     },
+    "Activity": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktivität"
+          }
+        }
+      }
+    },
     "Add": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Hinzufügen"
+          }
+        }
+      }
+    },
+    "Add %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ hinzufügen"
+          }
+        }
+      }
+    },
+    "Add Files…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dateien hinzufügen …"
           }
         }
       }
@@ -101,12 +141,52 @@
         }
       }
     },
+    "Assets": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assets"
+          }
+        }
+      }
+    },
+    "Back": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurück"
+          }
+        }
+      }
+    },
+    "Branch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Branch"
+          }
+        }
+      }
+    },
     "Cancel": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Check that the file still exists, then try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüfe, ob die Datei noch existiert, und versuche es erneut."
           }
         }
       }
@@ -131,6 +211,26 @@
         }
       }
     },
+    "Close": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schließen"
+          }
+        }
+      }
+    },
+    "Commit SHA": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commit-SHA"
+          }
+        }
+      }
+    },
     "Copy Code": {
       "localizations": {
         "de": {
@@ -141,12 +241,42 @@
         }
       }
     },
+    "Create a draft GitHub Release %@ (tagged on %@ when published)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entwurf des GitHub Release %1$@ erstellen (Tag auf %2$@ beim Veröffentlichen)"
+          }
+        }
+      }
+    },
+    "Create tag %@ on %@ and its GitHub Release": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag %1$@ auf %2$@ und das GitHub Release dazu erstellen"
+          }
+        }
+      }
+    },
     "Create tags, GitHub Releases, assets and pull requests in public and private repositories.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Tags, GitHub Releases, Assets und Pull Requests in öffentlichen und privaten Repositories erstellen."
+          }
+        }
+      }
+    },
+    "Create the GitHub Release for the existing tag %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Release für den vorhandenen Tag %@ erstellen"
           }
         }
       }
@@ -191,6 +321,16 @@
         }
       }
     },
+    "DROP could not read “%@”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP konnte „%@“ nicht lesen."
+          }
+        }
+      }
+    },
     "DROP could not use the Keychain.": {
       "localizations": {
         "de": {
@@ -231,6 +371,76 @@
         }
       }
     },
+    "Delete GitHub Release": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Release löschen"
+          }
+        }
+      }
+    },
+    "Delete GitHub Release and Tag": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Release und Tag löschen"
+          }
+        }
+      }
+    },
+    "Delete the GitHub Release %@?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Release %@ löschen?"
+          }
+        }
+      }
+    },
+    "Deleted the GitHub Release %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Release %@ gelöscht"
+          }
+        }
+      }
+    },
+    "Deleted the tag %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag %@ gelöscht"
+          }
+        }
+      }
+    },
+    "Delete…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Löschen …"
+          }
+        }
+      }
+    },
+    "Deleting %@ failed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Löschen von %@ fehlgeschlagen"
+          }
+        }
+      }
+    },
     "Description": {
       "localizations": {
         "de": {
@@ -251,12 +461,72 @@
         }
       }
     },
+    "Done": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fertig"
+          }
+        }
+      }
+    },
+    "Draft": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entwurf"
+          }
+        }
+      }
+    },
     "Drop": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Drop"
+          }
+        }
+      }
+    },
+    "Drop a Beta": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beta droppen"
+          }
+        }
+      }
+    },
+    "Drop failed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop fehlgeschlagen"
+          }
+        }
+      }
+    },
+    "Drop failed at “%@”: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop fehlgeschlagen bei „%1$@“: %2$@"
+          }
+        }
+      }
+    },
+    "Drop the same tag again to upload it once more.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Droppe denselben Tag erneut, um sie noch einmal hochzuladen."
           }
         }
       }
@@ -271,12 +541,92 @@
         }
       }
     },
+    "Dropped v%@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "v%@ gedroppt"
+          }
+        }
+      }
+    },
+    "Dropping this tag again updates its GitHub Release and replaces assets with the same names.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneutes Droppen dieses Tags aktualisiert sein GitHub Release und ersetzt gleichnamige Assets."
+          }
+        }
+      }
+    },
+    "Dropping v%@…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Droppe v%@ …"
+          }
+        }
+      }
+    },
+    "Drops": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drops"
+          }
+        }
+      }
+    },
     "Drop…": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Drop…"
+          }
+        }
+      }
+    },
+    "Each asset on a GitHub Release needs its own name.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jedes Asset eines GitHub Release braucht einen eigenen Namen."
+          }
+        }
+      }
+    },
+    "Edited the GitHub Release %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Release %@ bearbeitet"
+          }
+        }
+      }
+    },
+    "Editing the GitHub Release %@ failed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bearbeiten des GitHub Release %@ fehlgeschlagen"
+          }
+        }
+      }
+    },
+    "Edit…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bearbeiten …"
           }
         }
       }
@@ -297,6 +647,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gib diesen Code auf GitHub ein, damit DROP deinen Account verwenden darf:"
+          }
+        }
+      }
+    },
+    "Fix the problem, then drop the same tag again. Assets already uploaded are replaced.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behebe das Problem und droppe denselben Tag erneut. Bereits hochgeladene Assets werden ersetzt."
           }
         }
       }
@@ -327,6 +687,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "GitHub Container Registry"
+          }
+        }
+      }
+    },
+    "GitHub Release": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Release"
           }
         }
       }
@@ -371,6 +741,16 @@
         }
       }
     },
+    "GitHub reported no checksum for %@, so it wasn't verified.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub hat für %@ keine Prüfsumme gemeldet, daher wurde sie nicht geprüft."
+          }
+        }
+      }
+    },
     "GitHub sent an answer DROP doesn't understand.": {
       "localizations": {
         "de": {
@@ -391,12 +771,52 @@
         }
       }
     },
+    "History": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlauf"
+          }
+        }
+      }
+    },
     "Homebrew Tap": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Homebrew-Tap"
+          }
+        }
+      }
+    },
+    "Its assets are deleted too. This can't be undone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seine Assets werden ebenfalls gelöscht. Das kann nicht rückgängig gemacht werden."
+          }
+        }
+      }
+    },
+    "Latest": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neueste"
+          }
+        }
+      }
+    },
+    "Loading…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird geladen …"
           }
         }
       }
@@ -411,12 +831,42 @@
         }
       }
     },
+    "Marks the GitHub Release as a prerelease.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markiert das GitHub Release als Vorabversion (prerelease)."
+          }
+        }
+      }
+    },
+    "No GitHub Releases yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine GitHub Releases."
+          }
+        }
+      }
+    },
     "No Projects": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Keine Projekte"
+          }
+        }
+      }
+    },
+    "Nothing has been sent to GitHub yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es wurde noch nichts an GitHub gesendet."
           }
         }
       }
@@ -431,12 +881,42 @@
         }
       }
     },
+    "Only you can see a draft. GitHub creates the tag when you publish it.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur du siehst einen Entwurf. GitHub erstellt den Tag, wenn du ihn veröffentlichst."
+          }
+        }
+      }
+    },
     "Open GitHub": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "GitHub öffnen"
+          }
+        }
+      }
+    },
+    "Open on GitHub": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf GitHub öffnen"
+          }
+        }
+      }
+    },
+    "Paste the full or abbreviated SHA (7 to 40 hex characters).": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge den vollständigen oder gekürzten SHA ein (7 bis 40 Hex-Zeichen)."
           }
         }
       }
@@ -457,6 +937,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Den nächsten Drop dieses Projekts planen"
+          }
+        }
+      }
+    },
+    "Prerelease": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prerelease"
+          }
+        }
+      }
+    },
+    "Preview": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschau"
           }
         }
       }
@@ -501,12 +1001,52 @@
         }
       }
     },
+    "Ready to Drop": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereit zum Droppen"
+          }
+        }
+      }
+    },
+    "Release Notes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Release Notes"
+          }
+        }
+      }
+    },
     "Remove from DROP": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Aus DROP entfernen"
+          }
+        }
+      }
+    },
+    "Remove this asset": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Asset entfernen"
+          }
+        }
+      }
+    },
+    "Replace %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ersetzen"
           }
         }
       }
@@ -527,6 +1067,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "DROPs Zugriff auf GitHub prüfen oder widerrufen"
+          }
+        }
+      }
+    },
+    "Review…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüfen …"
+          }
+        }
+      }
+    },
+    "Same as the tag": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie der Tag"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichern"
+          }
+        }
+      }
+    },
+    "Save as Draft": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als Entwurf sichern"
           }
         }
       }
@@ -671,12 +1251,72 @@
         }
       }
     },
+    "Started dropping %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop von %@ gestartet"
+          }
+        }
+      }
+    },
     "Status": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Status"
+          }
+        }
+      }
+    },
+    "Steps": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritte"
+          }
+        }
+      }
+    },
+    "Tag": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag"
+          }
+        }
+      }
+    },
+    "Tag a specific commit": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einen bestimmten Commit taggen"
+          }
+        }
+      }
+    },
+    "Target": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziel"
+          }
+        }
+      }
+    },
+    "The checksum of “%@” on GitHub doesn't match your file.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Prüfsumme von „%@“ auf GitHub passt nicht zu deiner Datei."
           }
         }
       }
@@ -711,6 +1351,16 @@
         }
       }
     },
+    "Title": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel"
+          }
+        }
+      }
+    },
     "Try signing in again.": {
       "localizations": {
         "de": {
@@ -721,12 +1371,92 @@
         }
       }
     },
+    "Turn this off to publish the draft. GitHub then creates the tag.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schalte das aus, um den Entwurf zu veröffentlichen. GitHub erstellt dann den Tag."
+          }
+        }
+      }
+    },
+    "Two assets are named “%@”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zwei Assets heißen „%@“."
+          }
+        }
+      }
+    },
+    "Update the existing GitHub Release %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorhandenes GitHub Release %@ aktualisieren"
+          }
+        }
+      }
+    },
+    "Upload %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ hochladen"
+          }
+        }
+      }
+    },
+    "Use something like v1.2.3, without spaces or special characters.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwende etwas wie v1.2.3, ohne Leer- oder Sonderzeichen."
+          }
+        }
+      }
+    },
+    "Used only when the tag doesn't exist yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird nur verwendet, wenn der Tag noch nicht existiert."
+          }
+        }
+      }
+    },
+    "Verify the uploaded checksums": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hochgeladene Prüfsummen prüfen"
+          }
+        }
+      }
+    },
     "Version": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Version"
+          }
+        }
+      }
+    },
+    "View on GitHub": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf GitHub ansehen"
           }
         }
       }
@@ -757,6 +1487,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Warte darauf, dass du DROP auf GitHub bestätigst …"
+          }
+        }
+      }
+    },
+    "Write": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreiben"
+          }
+        }
+      }
+    },
+    "You haven't dropped this project with DROP yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast dieses Projekt noch nicht mit DROP gedroppt."
           }
         }
       }
@@ -814,12 +1564,32 @@
         }
       }
     },
+    "“%@” can't be used as a tag name.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„%@“ kann nicht als Tag-Name verwendet werden."
+          }
+        }
+      }
+    },
     "“%@” is not a GitHub repository.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "„%@“ ist kein GitHub-Repository."
+          }
+        }
+      }
+    },
+    "“%@” is not a commit SHA.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„%@“ ist kein Commit-SHA."
           }
         }
       }

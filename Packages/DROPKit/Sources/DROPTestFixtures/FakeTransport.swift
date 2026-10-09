@@ -26,6 +26,13 @@ public final class FakeTransport: HTTPTransport, Sendable {
         return (answer.body, response)
     }
 
+    /// Records the request with the file's contents as its body, then answers like `send`.
+    public func upload(_ request: URLRequest, fromFile file: URL) async throws -> (Data, HTTPURLResponse) {
+        var withBody = request
+        withBody.httpBody = try Data(contentsOf: file)
+        return try await send(withBody)
+    }
+
     /// A JSON body from a string literal.
     public static func json(_ text: String) -> Data { Data(text.utf8) }
 
