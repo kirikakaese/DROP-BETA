@@ -1,0 +1,50 @@
+name: Screenshots
+
+# Captures the app's main screens with sample data on every branch, so changes can be looked at
+# without building them. The PNGs are attached to the run as the "screenshots" artifact.
+on:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    name: Capture screenshots
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+      # A debug build: the screenshot scenarios and their sample data exist only there.
+      - name: Build (debug, ad-hoc signed)
+        run: |
+          xcodebuild build \
+            -project DROP.xcodeproj \
+            -scheme DROP \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM= \
+            ENABLE_HARDENED_RUNTIME=NO \
+            -quiet
+      - name: Capture
+        run: scripts/screenshots.sh build/Build/Products/Debug/DROP.app screenshots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+          retention-days: 14

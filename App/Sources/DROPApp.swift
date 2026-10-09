@@ -11,7 +11,11 @@ struct DROPApp: App {
     @State private var projects: ProjectsModel
 
     init() {
+        #if DEBUG
+        let services = ScreenshotScenario.requested == nil ? ServiceContainer.live() : .demo()
+        #else
         let services = ServiceContainer.live()
+        #endif
         self.services = services
         let account = AccountModel(services: services)
         _account = State(initialValue: account)
@@ -23,7 +27,11 @@ struct DROPApp: App {
             RootView(model: projects)
                 .environment(\.services, services)
                 .frame(minWidth: 820, minHeight: 520)
+                #if DEBUG
+                .task { await ScreenshotScenario.requested?.prepare(projects) }
+                #endif
         }
+        .defaultSize(width: 1100, height: 720)
         .commands {
             CommandGroup(replacing: .appInfo) {
                 Button("About \(AboutPanel.shortName)") {
