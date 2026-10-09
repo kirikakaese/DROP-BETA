@@ -224,6 +224,14 @@ struct AuthServiceTests {
         #expect(await service.state() == .signedIn)
         #expect(try await service.accessToken() == "access-3")
     }
+
+    @Test func asksForExtraScopesAndRemembersTheGrantedOnes() async throws {
+        let service = makeService()
+        try await signIn(service)
+        #expect(await service.grantedScopes() == ["repo"])
+        _ = try await service.startSignIn(scopes: OAuthConfiguration.workflowScopes)
+        #expect(await endpoint.requestedScopes == ["repo", "workflow"])
+    }
 }
 
 private actor SleepRecorder {

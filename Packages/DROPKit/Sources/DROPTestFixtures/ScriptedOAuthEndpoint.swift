@@ -20,6 +20,7 @@ public actor ScriptedOAuthEndpoint: OAuthEndpoint {
     public private(set) var refreshCount = 0
     public private(set) var refreshTokensSeen: [String] = []
     public private(set) var pollCount = 0
+    public private(set) var requestedScopes: [String] = []
 
     private var refreshGates: [CheckedContinuation<Void, Never>] = []
     private var holdsRefreshes = false
@@ -40,7 +41,8 @@ public actor ScriptedOAuthEndpoint: OAuthEndpoint {
     }
 
     public func requestDeviceCode(scopes: [String]) async throws -> DeviceAuthorization {
-        deviceAuthorization
+        requestedScopes = scopes
+        return deviceAuthorization
     }
 
     public func pollForToken(deviceCode: String) async throws -> DevicePollResult {

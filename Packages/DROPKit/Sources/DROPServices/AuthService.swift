@@ -15,11 +15,19 @@ public protocol AuthServicing: AccessTokenProviding {
     /// Whether this build has a Client ID and can sign in at all.
     var canSignIn: Bool { get }
     func state() async -> AuthState
-    /// Step 1 of device flow: get the code to show.
-    func startSignIn() async throws -> DeviceAuthorization
+    /// Step 1 of device flow: get the code to show, asking for `scopes`.
+    func startSignIn(scopes: [String]) async throws -> DeviceAuthorization
     /// Step 2: wait until the code was approved on GitHub, then keep the tokens. Cancellable.
     func finishSignIn(_ authorization: DeviceAuthorization) async throws
     func signOut() async throws
+    /// The scopes GitHub granted, or empty when it didn't say (then only trying tells).
+    func grantedScopes() async -> [String]
+}
+
+extension AuthServicing {
+    public func startSignIn() async throws -> DeviceAuthorization {
+        try await startSignIn(scopes: OAuthConfiguration.signInScopes)
+    }
 }
 
 /// The token lifecycle: device flow, Keychain storage, refreshing before expiry and after a 401.
@@ -116,9 +124,13 @@ public actor AuthService: AuthServicing {
 
     // MARK: Signing in and out
 
-    public func startSignIn() async throws -> DeviceAuthorization {
+    public func startSignIn(scopes: [String]) async throws -> DeviceAuthorization {
         guard let endpoint else { throw DROPError.clientIDMissing }
-        return try await endpoint.requestDeviceCode(scopes: OAuthConfiguration.signInScopes)
+        return try await endpoint.requestDeviceCode(scopes: scopes)
+    }
+
+    public func grantedScopes() async -> [String] {
+        (try? loadTokens())?.scopes ?? []
     }
 
     public func finishSignIn(_ authorization: DeviceAuthorization) async throws {

@@ -42,6 +42,7 @@ extension ServiceContainer {
             github: github,
             releases: InMemoryReleaseService(releases: demoReleases(now: now)),
             repository: demoRepository(),
+            actions: demoActions(now: now),
             notifier: RecordingDropNotifier()
         )
     }
@@ -99,8 +100,53 @@ extension ServiceContainer {
         return InMemoryRepositoryService(
             commits: commits,
             tags: ["v0.9.2": "0920000", "v0.9.1": "0910000", "v0.9.0": "0900000"],
-            files: ["CHANGELOG.md": "# Changelog\n"]
+            files: [
+                "CHANGELOG.md": "# Changelog\n",
+                ".github/workflows/ci.yml": "on:\n  push:\n    branches: [main]\n  pull_request:\n",
+                ".github/workflows/release.yml": "on:\n  push:\n    tags: ['v*']\n",
+                ".github/workflows/strings.yml": "on:\n  workflow_dispatch:\n  pull_request:\n",
+            ]
         )
+    }
+
+    /// SMP's workflows and a few runs, one of them still building.
+    private static func demoActions(now: Date) -> InMemoryActionsService {
+        var state = InMemoryActionsService.State()
+        state.workflows = [
+            GitHubWorkflow(id: 1, name: "CI", path: ".github/workflows/ci.yml"),
+            GitHubWorkflow(id: 2, name: "Release", path: ".github/workflows/release.yml"),
+            GitHubWorkflow(id: 3, name: "Strings", path: ".github/workflows/strings.yml"),
+        ]
+        let url = URL(string: "https://github.com/kirikakaese/SMP/actions")
+        state.runs = [
+            GitHubWorkflowRun(
+                id: 103, workflowID: 2, name: "Release", title: "v1.0.0-beta.1", headBranch: "v1.0.0-beta.1",
+                event: "push", status: "in_progress", conclusion: nil, runNumber: 14, htmlURL: url, createdAt: now - 300
+            ),
+            GitHubWorkflowRun(
+                id: 102, workflowID: 1, name: "CI", title: "Bring the README up to date for the 0.9 beta",
+                status: "completed", conclusion: "success", runNumber: 88, htmlURL: url, createdAt: now - 3_600
+            ),
+            GitHubWorkflowRun(
+                id: 101, workflowID: 1, name: "CI", title: "Add an app icon", status: "completed",
+                conclusion: "failure", runNumber: 87, htmlURL: url, createdAt: now - 7_200
+            ),
+        ]
+        state.jobs[103] = [
+            GitHubJob(id: 1031, name: "Build, sign and publish", status: "in_progress", conclusion: nil, steps: [
+                GitHubJob.Step(number: 1, name: "Set up job", status: "completed", conclusion: "success"),
+                GitHubJob.Step(number: 2, name: "Build universal app", status: "completed", conclusion: "success"),
+                GitHubJob.Step(number: 3, name: "Sign the update", status: "in_progress", conclusion: nil),
+            ]),
+        ]
+        state.logs[1031] = """
+            ** BUILD SUCCEEDED **
+            All code in build/SMP.app is ad-hoc signed without the Hardened Runtime.
+            SMP started and kept running for 15 seconds.
+            Signing SMP-1.0.0-beta.1.zip with the update key…
+            """
+        state.artifacts[102] = [GitHubArtifact(id: 501, name: "SMP-build", size: 8_412_331)]
+        return InMemoryActionsService(state)
     }
 
     private static func demoHistory(for project: Project, now: Date) -> [DropRecord] {
@@ -130,6 +176,10 @@ private struct OfflineTransport: HTTPTransport {
     }
 
     func upload(_ request: URLRequest, fromFile file: URL) async throws -> (Data, HTTPURLResponse) {
+        throw DROPError.network(details: "Demo mode is offline")
+    }
+
+    func download(_ request: URLRequest, to destination: URL) async throws -> HTTPURLResponse {
         throw DROPError.network(details: "Demo mode is offline")
     }
 }

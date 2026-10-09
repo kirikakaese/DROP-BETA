@@ -8,6 +8,7 @@ struct ProjectDetailView: View {
     let model: ProjectsModel
     let project: Project
     @State private var activity: ProjectActivityModel?
+    @State private var actions: ProjectActionsModel?
     @State private var editing: GitHubRelease?
     @State private var deleting: GitHubRelease?
 
@@ -31,6 +32,9 @@ struct ProjectDetailView: View {
                 ReleasesSection(activity: activity, editing: $editing, deleting: $deleting)
                 HistorySection(activity: activity)
             }
+            if let actions {
+                ActionsSections(actions: actions)
+            }
         }
         .formStyle(.grouped)
         .navigationTitle(project.slug.name)
@@ -42,7 +46,9 @@ struct ProjectDetailView: View {
                 current = model.activityModel(for: project)
             }
             activity = current
+            if actions?.project.id != project.id { actions = model.actionsModel(for: project) }
             await current.load(branch: model.repositories[project.id]?.defaultBranch ?? "main")
+            await actions?.load()
         }
         .sheet(item: $editing) { release in
             if let activity {
@@ -66,6 +72,7 @@ struct ProjectDetailView: View {
             Text("Its assets are deleted too. This can't be undone.")
         }
         .errorAlert(Binding(get: { activity?.error }, set: { activity?.error = $0 }))
+        .modifier(OptionalActionsSheets(actions: actions))
     }
 }
 
@@ -296,6 +303,19 @@ private struct ReleaseEditSheet: View {
             notes = release.body ?? ""
             isDraft = release.isDraft
             isPrerelease = release.isPrerelease
+        }
+    }
+}
+
+/// `ActionsSheets` once the project's actions are loaded.
+private struct OptionalActionsSheets: ViewModifier {
+    let actions: ProjectActionsModel?
+
+    @ViewBuilder func body(content: Content) -> some View {
+        if let actions {
+            content.modifier(ActionsSheets(actions: actions))
+        } else {
+            content
         }
     }
 }

@@ -7,8 +7,8 @@ GHCR and npm. It never fights the automation you already have: anything a workfl
 DROP watches and verifies instead of doing it twice.
 
 > **Status:** early development (0.1). Signing in with GitHub, adding projects, dropping GitHub
-> Releases with assets and checksums, and changelogs with version suggestions work; the other
-> features below are being built one by one. Please
+> Releases with assets and checksums, changelogs with version suggestions and GitHub Actions
+> (runs, logs, artifacts) work; the other features below are being built one by one. Please
 > [open an issue](https://github.com/kirikakaese/DROP-BETA/issues) if something looks wrong.
 
 ## Features (planned)

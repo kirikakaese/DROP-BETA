@@ -42,6 +42,48 @@ public struct GitHubClient: Sendable {
         return try await transport.send(urlRequest)
     }
 
+    /// For endpoints that answer with a redirect to GitHub's storage (logs, artifacts): the
+    /// storage URL, which is fetched without the token.
+    public func redirectLocation(of request: GitHubRequest) async throws -> URL {
+        var token = try await tokens.accessToken()
+        var (data, response) = try await perform(request, token: token)
+        if response.statusCode == 401 {
+            token = try await tokens.accessToken(replacingRejected: token)
+            (data, response) = try await perform(request, token: token)
+        }
+        guard (300..<400).contains(response.statusCode) else {
+            try Self.check(response, data: data)
+            throw DROPError.network(details: "Expected a redirect, got HTTP \(response.statusCode)")
+        }
+        guard let location = response.value(forHTTPHeaderField: "Location"),
+            let url = URL(string: location, relativeTo: response.url)?.absoluteURL,
+            url.scheme == "https"
+        else { throw DROPError.network(details: "Redirect without an HTTPS location") }
+        return url
+    }
+
+    /// Fetches up to `bytes` from the end of a storage URL from `redirectLocation(of:)`.
+    public func fetchTail(of url: URL, bytes: Int) async throws -> Data {
+        var request = URLRequest(url: url)
+        request.setValue("bytes=-\(bytes)", forHTTPHeaderField: "Range")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (data, response) = try await transport.send(request)
+        guard [200, 206].contains(response.statusCode) else {
+            throw DROPError.network(details: "HTTP \(response.statusCode) from GitHub's storage")
+        }
+        return data.count > bytes ? data.suffix(bytes) : data
+    }
+
+    /// Downloads a storage URL from `redirectLocation(of:)` to `destination`.
+    public func download(_ url: URL, to destination: URL) async throws {
+        var request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let response = try await transport.download(request, to: destination)
+        guard response.statusCode == 200 else {
+            throw DROPError.network(details: "HTTP \(response.statusCode) from GitHub's storage")
+        }
+    }
+
     /// Sends the request and decodes the JSON body.
     public func decode<Value: Decodable>(_ type: Value.Type, from request: GitHubRequest) async throws -> Value {
         try await send(request).decode(type)
