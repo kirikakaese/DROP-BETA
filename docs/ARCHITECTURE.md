@@ -36,3 +36,8 @@ The app target (`App/Sources`) creates the live `ServiceContainer`, the models a
   on a new `changelog/<tag>` branch and opens a pull request; it never pushes to the default branch.
   Its commits use the signed-in account's `ID+login@users.noreply.github.com` address, a
   Conventional Commit message and no trailer.
+- **Existing automation wins.** `AutomationDetector` reads workflows and tool configuration
+  (GoReleaser, semantic-release, release-please, changesets) and marks every destination it finds
+  automated as External. DROP never writes to an External destination: when a workflow owns the
+  GitHub Release, a drop only pushes the tag (or starts the workflow on it), waits for the run and
+  checks the result. Taking a destination over needs a confirmation that names its automation.

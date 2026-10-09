@@ -160,8 +160,22 @@ extension GitHubRequest {
     }
 
     public static func createBranch(_ slug: RepositorySlug, name: String, sha: String) throws -> GitHubRequest {
-        let body = try JSONEncoder().encode(["ref": "refs/heads/\(name)", "sha": sha])
+        try createReference(slug, ref: "refs/heads/\(name)", sha: sha)
+    }
+
+    /// A lightweight tag on `sha`. A workflow that starts on tag pushes starts as for a pushed tag.
+    public static func createTag(_ slug: RepositorySlug, name: String, sha: String) throws -> GitHubRequest {
+        try createReference(slug, ref: "refs/tags/\(name)", sha: sha)
+    }
+
+    static func createReference(_ slug: RepositorySlug, ref: String, sha: String) throws -> GitHubRequest {
+        let body = try JSONEncoder().encode(["ref": ref, "sha": sha])
         return GitHubRequest(.post, path: repositoryPath(slug) + "/git/refs", body: body)
+    }
+
+    /// `GET /repos/{owner}/{repo}/commits/{ref}`: a branch, tag or abbreviated SHA as one commit.
+    public static func commit(_ slug: RepositorySlug, ref: String) -> GitHubRequest {
+        GitHubRequest(path: repositoryPath(slug) + "/commits/" + encodeSegment(ref))
     }
 
     /// `PUT /repos/{owner}/{repo}/contents/{path}`: creates or updates one file in one commit.

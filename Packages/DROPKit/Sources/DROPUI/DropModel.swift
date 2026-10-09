@@ -43,6 +43,12 @@ public final class DropModel {
     public var updatesChangelog = false
     /// The commits since the last release, once loaded.
     public private(set) var changes: UnreleasedChanges?
+    /// Who performs each destination, once loaded.
+    public private(set) var automation: AutomationReport?
+
+    /// The workflow that creates the GitHub Release, when an existing one owns it. DROP then only
+    /// pushes the tag (or starts the workflow) and watches.
+    public var releaseAutomation: ReleaseAutomation? { automation?.releaseAutomation }
     private var suggestedTag: String?
     private var suggestedNotes: String?
     private let defaultBranch: String
@@ -106,7 +112,9 @@ public final class DropModel {
             isPrerelease: isPrerelease,
             assets: assets,
             includesChecksums: includesChecksums,
-            changelogBase: updatesChangelog ? (targetsCommit ? defaultBranch : targetBranch) : nil
+            changelogBase: updatesChangelog ? (targetsCommit ? defaultBranch : targetBranch) : nil,
+            releaseAutomation: releaseAutomation,
+            externalDestinations: automation?.externalRegistries ?? []
         )
     }
 
@@ -119,6 +127,15 @@ public final class DropModel {
             \(changes.count(ofType: "fix")) fixes
             """)
         return "\(since): \(counts)"
+    }
+
+    /// Loads who performs each destination, so the plan names the automation that owns them.
+    public func loadAutomation() async {
+        do {
+            automation = try await services.automation.report(for: project, ref: defaultBranch)
+        } catch {
+            formError = account.filter(error)
+        }
     }
 
     /// Loads the commits since the last release and fills in the suggested tag and notes. Anything

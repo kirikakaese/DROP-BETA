@@ -29,6 +29,9 @@ struct ProjectDetailView: View {
                 if let unreleased = activity.unreleased {
                     UnreleasedSection(changes: unreleased)
                 }
+                if let report = activity.automation {
+                    DestinationsSection(activity: activity, report: report)
+                }
                 ReleasesSection(activity: activity, editing: $editing, deleting: $deleting)
                 HistorySection(activity: activity)
             }
@@ -72,7 +75,7 @@ struct ProjectDetailView: View {
             Text("Its assets are deleted too. This can't be undone.")
         }
         .errorAlert(Binding(get: { activity?.error }, set: { activity?.error = $0 }))
-        .modifier(OptionalActionsSheets(actions: actions))
+        .modifier(ProjectSheets(activity: activity, actions: actions))
     }
 }
 
@@ -307,14 +310,21 @@ private struct ReleaseEditSheet: View {
     }
 }
 
-/// `ActionsSheets` once the project's actions are loaded.
-private struct OptionalActionsSheets: ViewModifier {
+/// The sheets and dialogs of the project's sections, once their models are loaded. They hang off
+/// the whole form so they stay put while the form scrolls.
+private struct ProjectSheets: ViewModifier {
+    let activity: ProjectActivityModel?
     let actions: ProjectActionsModel?
 
     @ViewBuilder func body(content: Content) -> some View {
-        if let actions {
+        switch (activity, actions) {
+        case let (activity?, actions?):
+            content.modifier(ActionsSheets(actions: actions)).modifier(TakeoverConfirmation(activity: activity))
+        case let (activity?, nil):
+            content.modifier(TakeoverConfirmation(activity: activity))
+        case let (nil, actions?):
             content.modifier(ActionsSheets(actions: actions))
-        } else {
+        case (nil, nil):
             content
         }
     }

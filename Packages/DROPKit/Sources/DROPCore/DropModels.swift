@@ -28,6 +28,21 @@ public enum DropTarget: Hashable, Sendable {
     }
 }
 
+/// The workflow that creates the GitHub Release when the GitHub Release is External.
+public struct ReleaseAutomation: Hashable, Sendable {
+    public let workflowID: Int64
+    /// The file name, like `release.yml`.
+    public let name: String
+    /// Whether pushing the tag starts it; otherwise DROP starts it by hand on the tag.
+    public let startsOnTag: Bool
+
+    public init(workflowID: Int64, name: String, startsOnTag: Bool) {
+        self.workflowID = workflowID
+        self.name = name
+        self.startsOnTag = startsOnTag
+    }
+}
+
 /// Everything you chose for a drop, before anything is planned or sent.
 public struct DropRequest: Hashable, Sendable {
     public var projectID: UUID
@@ -44,6 +59,11 @@ public struct DropRequest: Hashable, Sendable {
     public var includesChecksums: Bool
     /// The branch to open a CHANGELOG.md pull request against, or `nil` to leave CHANGELOG.md alone.
     public var changelogBase: String?
+    /// Set when an existing workflow owns the GitHub Release: DROP then only pushes the tag (or
+    /// starts the workflow) and watches.
+    public var releaseAutomation: ReleaseAutomation?
+    /// Registries an existing automation publishes to; DROP leaves them alone.
+    public var externalDestinations: [DestinationSetting]
 
     public init(
         projectID: UUID,
@@ -56,7 +76,9 @@ public struct DropRequest: Hashable, Sendable {
         isPrerelease: Bool = false,
         assets: [DropAsset] = [],
         includesChecksums: Bool = true,
-        changelogBase: String? = nil
+        changelogBase: String? = nil,
+        releaseAutomation: ReleaseAutomation? = nil,
+        externalDestinations: [DestinationSetting] = []
     ) {
         self.projectID = projectID
         self.slug = slug
@@ -69,6 +91,8 @@ public struct DropRequest: Hashable, Sendable {
         self.assets = assets
         self.includesChecksums = includesChecksums
         self.changelogBase = changelogBase
+        self.releaseAutomation = releaseAutomation
+        self.externalDestinations = externalDestinations
     }
 
     public var releaseTitle: String {
@@ -96,6 +120,16 @@ public enum DropStep: Hashable, Sendable {
     case verifyChecksums
     /// Open a pull request against `base` that adds the notes to CHANGELOG.md.
     case openChangelogPullRequest(tag: String, base: String)
+    /// Create and push only the tag; a workflow creates the GitHub Release.
+    case pushTag(tag: String, target: String)
+    /// Start the workflow that creates the GitHub Release, on the tag.
+    case dispatchWorkflow(name: String, workflowID: Int64, tag: String)
+    /// Wait while the workflow builds and creates the GitHub Release.
+    case awaitWorkflow(name: String, workflowID: Int64, tag: String)
+    /// Check that the GitHub Release for the tag exists once the workflow finished.
+    case verifyGitHubRelease(tag: String, createdBy: String)
+    /// A registry an existing automation publishes to; DROP leaves it alone.
+    case leaveToAutomation(destination: Destination, owner: String)
 
     /// A short description for the plan, the progress list and the history.
     public var title: String {
@@ -118,6 +152,48 @@ public enum DropStep: Hashable, Sendable {
             String(localized: "Verify the uploaded checksums")
         case .openChangelogPullRequest(let tag, let base):
             String(localized: "Open a pull request against \(base) that adds \(tag) to CHANGELOG.md")
+        case .pushTag(let tag, let target):
+            String(localized: "Create tag \(tag) on \(target) and push it")
+        case .dispatchWorkflow(let name, _, let tag):
+            String(localized: "Start \(name) on \(tag)")
+        case .awaitWorkflow:
+            String(localized: "Build and create the GitHub Release")
+        case .verifyGitHubRelease(let tag, _):
+            String(localized: "Check that the GitHub Release \(tag) exists")
+        case .leaveToAutomation(let destination, _):
+            String(localized: "Publish to \(destination.title)")
+        }
+    }
+}
+
+/// Who performs a step of the plan.
+public enum Performer: Hashable, Sendable {
+    case drop
+    /// An existing automation, by file name.
+    case automation(String)
+
+    public var title: String {
+        switch self {
+        case .drop: "DROP"
+        case .automation(let name): name
+        }
+    }
+}
+
+extension DropStep {
+    public var performer: Performer {
+        switch self {
+        case .awaitWorkflow(let name, _, _): .automation(name)
+        case .leaveToAutomation(_, let owner): .automation((owner as NSString).lastPathComponent)
+        default: .drop
+        }
+    }
+
+    /// Whether the step changes something on GitHub, as opposed to reading or waiting.
+    public var writes: Bool {
+        switch self {
+        case .verifyChecksums, .awaitWorkflow, .verifyGitHubRelease, .leaveToAutomation: false
+        default: true
         }
     }
 }

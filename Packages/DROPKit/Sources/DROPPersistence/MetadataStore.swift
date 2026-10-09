@@ -19,6 +19,10 @@ public protocol MetadataStoring: Sendable {
     /// The project's audit log, newest first.
     func auditEntries(projectID: UUID, limit: Int) throws -> [AuditEntry]
     func appendAuditEntry(_ entry: AuditEntry) throws
+
+    /// The destinations you set for a project. Unset ones aren't listed.
+    func destinationSettings(projectID: UUID) throws -> [DestinationSetting]
+    func saveDestinationSetting(_ setting: DestinationSetting, projectID: UUID) throws
 }
 
 /// `MetadataStoring` backed by SQLite through GRDB.
@@ -89,6 +93,16 @@ public final class GRDBMetadataStore: MetadataStoring, Sendable {
                 table.column("succeeded", .boolean).notNull()
             }
         }
+        // Who performs each destination (DROP, an existing automation, or nobody), per project.
+        migrator.registerMigration("v4") { db in
+            try db.create(table: "destinationSetting") { table in
+                table.column("projectID", .text).notNull().references("project", onDelete: .cascade)
+                table.column("destination", .text).notNull()
+                table.column("mode", .text).notNull()
+                table.column("owner", .text)
+                table.primaryKey(["projectID", "destination"])
+            }
+        }
         return migrator
     }
 
@@ -141,6 +155,16 @@ public final class GRDBMetadataStore: MetadataStoring, Sendable {
 
     public func appendAuditEntry(_ entry: AuditEntry) throws {
         try database.write { db in try AuditRow(entry).insert(db) }
+    }
+
+    public func destinationSettings(projectID: UUID) throws -> [DestinationSetting] {
+        try database.read { db in
+            try DestinationRow.filter(Column("projectID") == projectID.uuidString).fetchAll(db).compactMap(\.setting)
+        }
+    }
+
+    public func saveDestinationSetting(_ setting: DestinationSetting, projectID: UUID) throws {
+        try database.write { db in try DestinationRow(setting, projectID: projectID).save(db) }
     }
 }
 

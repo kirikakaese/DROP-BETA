@@ -11,12 +11,102 @@
         }
       }
     },
+    "%@ already does this. If DROP does it too, they will overwrite each other.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ erledigt das bereits. Wenn DROP es auch tut, überschreiben sie sich gegenseitig."
+          }
+        }
+      }
+    },
+    "%@ creates the GitHub Release on tag push. DROP pushes the tag and watches.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ erstellt das GitHub Release beim Tag-Push. DROP pusht den Tag und beobachtet."
+          }
+        }
+      }
+    },
+    "%@ creates the GitHub Release. DROP pushes the tag, starts %@ and watches.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ erstellt das GitHub Release. DROP pusht den Tag, startet %2$@ und beobachtet."
+          }
+        }
+      }
+    },
+    "%@ didn't finish within an hour.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist nicht innerhalb einer Stunde fertig geworden."
+          }
+        }
+      }
+    },
+    "%@ does this (found “%@”). DROP watches and verifies.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ erledigt das (gefunden: „%2$@“). DROP beobachtet und prüft."
+          }
+        }
+      }
+    },
+    "%@ does this. DROP watches and verifies.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ erledigt das. DROP beobachtet und prüft."
+          }
+        }
+      }
+    },
+    "%@ failed (%@).": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ ist fehlgeschlagen (%2$@)."
+          }
+        }
+      }
+    },
+    "%@ finished, but there is no GitHub Release %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ ist fertig, aber es gibt kein GitHub Release %2$@."
+          }
+        }
+      }
+    },
     "%@ is already in your projects.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "%@ ist bereits in deinen Projekten."
+          }
+        }
+      }
+    },
+    "%@ is now %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ ist jetzt %2$@"
           }
         }
       }
@@ -171,6 +261,16 @@
         }
       }
     },
+    "An automation": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine Automatisierung"
+          }
+        }
+      }
+    },
     "Archived": {
       "localizations": {
         "de": {
@@ -241,6 +341,16 @@
         }
       }
     },
+    "Build and create the GitHub Release": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bauen und das GitHub Release erstellen"
+          }
+        }
+      }
+    },
     "Cancel": {
       "localizations": {
         "de": {
@@ -261,6 +371,16 @@
         }
       }
     },
+    "Check that the GitHub Release %@ exists": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüfen, ob das GitHub Release %@ existiert"
+          }
+        }
+      }
+    },
     "Check that the file still exists, then try again.": {
       "localizations": {
         "de": {
@@ -277,6 +397,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Prüfe deine Internetverbindung und versuche es erneut."
+          }
+        }
+      }
+    },
+    "Choose a new version, or run %@ on the tag by hand.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle eine neue Version oder starte %@ von Hand auf dem Tag."
           }
         }
       }
@@ -337,6 +467,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tag %1$@ auf %2$@ und das GitHub Release dazu erstellen"
+          }
+        }
+      }
+    },
+    "Create tag %@ on %@ and push it": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag %1$@ auf %2$@ erstellen und pushen"
           }
         }
       }
@@ -427,6 +567,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "DROP konnte den Schlüsselbund nicht verwenden."
+          }
+        }
+      }
+    },
+    "DROP does this.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP erledigt das."
           }
         }
       }
@@ -547,6 +697,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Beschreibung"
+          }
+        }
+      }
+    },
+    "Destinations": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziele"
           }
         }
       }
@@ -751,6 +911,26 @@
         }
       }
     },
+    "External": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extern"
+          }
+        }
+      }
+    },
+    "External destinations are left to the automation that owns them; DROP only checks the result.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Externe Ziele bleiben der Automatisierung überlassen, der sie gehören; DROP prüft nur das Ergebnis."
+          }
+        }
+      }
+    },
     "Fix the problem, then drop the same tag again. Assets already uploaded are replaced.": {
       "localizations": {
         "de": {
@@ -931,6 +1111,26 @@
         }
       }
     },
+    "Let DROP Do It": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP übernehmen lassen"
+          }
+        }
+      }
+    },
+    "Let DROP do %@ instead?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ stattdessen von DROP erledigen lassen?"
+          }
+        }
+      }
+    },
     "Loading…": {
       "localizations": {
         "de": {
@@ -957,6 +1157,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stelle sicher, dass dein Anmeldeschlüsselbund entsperrt ist, und versuche es erneut."
+          }
+        }
+      }
+    },
+    "Managed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwaltet"
           }
         }
       }
@@ -1041,6 +1251,16 @@
         }
       }
     },
+    "Not part of drops.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht Teil von Drops."
+          }
+        }
+      }
+    },
     "Nothing has been sent to GitHub yet.": {
       "localizations": {
         "de": {
@@ -1057,6 +1277,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "OK"
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus"
           }
         }
       }
@@ -1111,6 +1341,16 @@
         }
       }
     },
+    "Open the run on GitHub, fix it, then run it again on the tag.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne den Lauf auf GitHub, behebe den Fehler und starte ihn erneut auf dem Tag."
+          }
+        }
+      }
+    },
     "Opens a pull request with a workflow that builds every tag for six platforms.": {
       "localizations": {
         "de": {
@@ -1147,6 +1387,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Patch"
+          }
+        }
+      }
+    },
+    "Performed by": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgeführt von"
           }
         }
       }
@@ -1227,6 +1477,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Öffentlich"
+          }
+        }
+      }
+    },
+    "Publish to %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In %@ veröffentlichen"
           }
         }
       }
@@ -1571,6 +1831,16 @@
         }
       }
     },
+    "Start %@ on %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ auf %2$@ starten"
+          }
+        }
+      }
+    },
     "Started dropping %@": {
       "localizations": {
         "de": {
@@ -1657,6 +1927,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Der Anmeldecode ist abgelaufen, bevor er bestätigt wurde."
+          }
+        }
+      }
+    },
+    "The tag %@ exists, and %@ starts only when a tag is pushed.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Tag %1$@ existiert bereits, und %2$@ startet nur, wenn ein Tag gepusht wird."
           }
         }
       }

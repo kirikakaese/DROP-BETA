@@ -17,6 +17,8 @@ public struct DropResult: Sendable, Equatable {
     public let unverified: [String]
     /// The pull request that adds the notes to CHANGELOG.md, if one was opened.
     public let changelogPullRequest: GitHubPullRequest?
+    /// The run of the workflow that created the GitHub Release, when a workflow owns it.
+    public let workflowRun: GitHubWorkflowRun?
 }
 
 /// Plans and performs drops: the tag, the GitHub Release, its assets and `SHA256SUMS.txt`.
@@ -28,20 +30,36 @@ public struct DropService: Sendable {
     let metadata: any MetadataStoring
     let notifier: any DropNotifying
     let changelog: ChangelogService?
+    let repository: (any RepositoryServicing)?
+    let actions: (any ActionsServicing)?
     let now: @Sendable () -> Date
+    let sleep: @Sendable (Duration) async throws -> Void
+    /// How often a release workflow's run is checked, and how long DROP waits for it at most.
+    let pollInterval: Duration
+    let workflowTimeout: TimeInterval
 
     public init(
         releases: any ReleaseServicing,
         metadata: any MetadataStoring,
         notifier: any DropNotifying,
         changelog: ChangelogService? = nil,
-        now: @escaping @Sendable () -> Date = { Date() }
+        repository: (any RepositoryServicing)? = nil,
+        actions: (any ActionsServicing)? = nil,
+        now: @escaping @Sendable () -> Date = { Date() },
+        sleep: @escaping @Sendable (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
+        pollInterval: Duration = .seconds(10),
+        workflowTimeout: TimeInterval = 3_600
     ) {
         self.releases = releases
         self.metadata = metadata
         self.notifier = notifier
         self.changelog = changelog
+        self.repository = repository
+        self.actions = actions
         self.now = now
+        self.sleep = sleep
+        self.pollInterval = pollInterval
+        self.workflowTimeout = workflowTimeout
     }
 
     // MARK: Planning
@@ -49,6 +67,23 @@ public struct DropService: Sendable {
     public func plan(_ request: DropRequest) async throws -> DropPlan {
         try Self.validate(request)
         let checksums = try Self.checksums(of: request.assets)
+        var steps: [DropStep]
+        if let automation = request.releaseAutomation {
+            steps = try await automatedSteps(request, automation)
+        } else {
+            steps = try await managedSteps(request)
+        }
+        if let base = request.changelogBase {
+            steps.append(.openChangelogPullRequest(tag: request.tagName, base: base))
+        }
+        for setting in request.externalDestinations where setting.destination != .githubRelease {
+            steps.append(.leaveToAutomation(destination: setting.destination, owner: setting.owner ?? "?"))
+        }
+        return DropPlan(request: request, steps: steps, checksums: checksums)
+    }
+
+    /// DROP creates the GitHub Release: tag, release (or its update), assets, checksums.
+    private func managedSteps(_ request: DropRequest) async throws -> [DropStep] {
         let slug = request.slug
         let existing = try await releases.release(slug, tag: request.tagName)
         var steps: [DropStep] = []
@@ -75,10 +110,27 @@ public struct DropService: Sendable {
         if !request.assets.isEmpty {
             steps.append(.verifyChecksums)
         }
-        if let base = request.changelogBase {
-            steps.append(.openChangelogPullRequest(tag: request.tagName, base: base))
+        return steps
+    }
+
+    /// A workflow creates the GitHub Release: DROP only pushes the tag (or starts the workflow on it),
+    /// waits for the run and checks the result. It never creates the GitHub Release itself.
+    private func automatedSteps(_ request: DropRequest, _ automation: ReleaseAutomation) async throws -> [DropStep] {
+        let tag = request.tagName
+        let tagExists = try await releases.tagExists(request.slug, tag: tag)
+        if tagExists && automation.startsOnTag {
+            throw DROPError.tagAlreadyPushed(tag, workflow: automation.name)
         }
-        return DropPlan(request: request, steps: steps, checksums: checksums)
+        var steps: [DropStep] = []
+        if !tagExists {
+            steps.append(.pushTag(tag: tag, target: request.target.commitish))
+        }
+        if !automation.startsOnTag {
+            steps.append(.dispatchWorkflow(name: automation.name, workflowID: automation.workflowID, tag: tag))
+        }
+        steps.append(.awaitWorkflow(name: automation.name, workflowID: automation.workflowID, tag: tag))
+        steps.append(.verifyGitHubRelease(tag: tag, createdBy: automation.name))
+        return steps
     }
 
     static func validate(_ request: DropRequest) throws {
@@ -177,7 +229,11 @@ public struct DropService: Sendable {
         audit(record, DropWording.doneTitle(version: request.tagName), succeeded: true)
         await notifier.dropped(tag: request.tagName, project: request.slug.description, url: release.htmlURL)
         return DropResult(
-            release: release, record: record, unverified: run.unverified, changelogPullRequest: run.changelogPullRequest
+            release: release,
+            record: record,
+            unverified: run.unverified,
+            changelogPullRequest: run.changelogPullRequest,
+            workflowRun: run.workflowRun
         )
     }
 
@@ -207,7 +263,61 @@ public struct DropService: Sendable {
             run.changelogPullRequest = try await changelog.openPullRequest(
                 slug, base: base, tag: tag, notes: Changelog.demotingHeadings(request.notes)
             )
+        case .pushTag, .dispatchWorkflow, .awaitWorkflow, .verifyGitHubRelease, .leaveToAutomation:
+            try await performAutomated(step, in: &run)
         }
+    }
+
+    /// The steps of a drop whose GitHub Release a workflow creates.
+    private func performAutomated(_ step: DropStep, in run: inout DropRun) async throws {
+        let slug = run.plan.request.slug
+        switch step {
+        case .pushTag(let tag, let target):
+            guard let repository else { throw DROPError.somethingWentWrong }
+            let sha = try await repository.commitSHA(slug, ref: target)
+            try await repository.createTag(slug, name: tag, sha: sha)
+        case .dispatchWorkflow(_, let workflowID, let tag):
+            guard let actions else { throw DROPError.somethingWentWrong }
+            try await actions.dispatch(slug, workflowID: workflowID, ref: tag)
+        case .awaitWorkflow(let name, let workflowID, let tag):
+            run.workflowRun = try await awaitRun(of: workflowID, named: name, tag: tag, slug: slug)
+        case .verifyGitHubRelease(let tag, let createdBy):
+            guard let release = try await releases.release(slug, tag: tag) else {
+                throw DROPError(
+                    .notFound,
+                    whatHappened: String(localized: "\(createdBy) finished, but there is no GitHub Release \(tag).")
+                )
+            }
+            run.release = release
+        case .leaveToAutomation:
+            break
+        default:
+            throw DROPError.somethingWentWrong
+        }
+    }
+
+    /// Waits for the workflow's run on `tag` to finish. Fails when it fails or takes too long.
+    private func awaitRun(of workflowID: Int64, named name: String, tag: String, slug: RepositorySlug) async throws
+        -> GitHubWorkflowRun
+    {
+        guard let actions else { throw DROPError.somethingWentWrong }
+        let start = now()
+        while now().timeIntervalSince(start) < workflowTimeout {
+            let runs = try await actions.runs(slug, workflowID: workflowID)
+            if let found = runs.first(where: { $0.headBranch == tag }), found.isFinished {
+                guard found.conclusion == "success" else {
+                    throw DROPError(
+                        .rejected,
+                        whatHappened: String(localized: "\(name) failed (\(found.conclusion ?? found.status))."),
+                        howToFix: String(localized: "Open the run on GitHub, fix it, then run it again on the tag.")
+                    )
+                }
+                return found
+            }
+            try await sleep(pollInterval)
+            try Task.checkCancellation()
+        }
+        throw DROPError(.network, whatHappened: String(localized: "\(name) didn't finish within an hour."))
     }
 
     private func upload(_ name: String, in run: inout DropRun) async throws {
@@ -270,6 +380,7 @@ private struct DropRun {
     var expected: [String: String]
     var unverified: [String] = []
     var changelogPullRequest: GitHubPullRequest?
+    var workflowRun: GitHubWorkflowRun?
 
     init(plan: DropPlan) {
         self.plan = plan
@@ -290,6 +401,14 @@ private struct DropRun {
 }
 
 extension DROPError {
+    static func tagAlreadyPushed(_ tag: String, workflow: String) -> DROPError {
+        DROPError(
+            .alreadyExists,
+            whatHappened: String(localized: "The tag \(tag) exists, and \(workflow) starts only when a tag is pushed."),
+            howToFix: String(localized: "Choose a new version, or run \(workflow) on the tag by hand.")
+        )
+    }
+
     static var dropAgainHint: String {
         String(localized: "Fix the problem, then drop the same tag again. Assets already uploaded are replaced.")
     }

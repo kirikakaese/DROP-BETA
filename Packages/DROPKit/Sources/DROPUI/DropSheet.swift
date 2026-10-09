@@ -32,6 +32,7 @@ struct DropSheet: View {
         .frame(width: 600, height: 640)
         .task {
             await model.loadBranches()
+            await model.loadAutomation()
             await model.loadSuggestion()
         }
         .interactiveDismissDisabled(model.isRunning)
@@ -126,10 +127,15 @@ struct DropFormView: View {
                     .foregroundStyle(.secondary)
             }
             Section {
+                if let automation = model.releaseAutomation {
+                    Label(automationNotice(automation), systemImage: "gearshape.2")
+                }
                 Toggle(DropWording.betaTitle, isOn: $model.isPrerelease)
                     .help("Marks the GitHub Release as a prerelease.")
-                Toggle("Save as Draft", isOn: $model.isDraft)
-                    .help("Only you can see a draft. GitHub creates the tag when you publish it.")
+                if model.releaseAutomation == nil {
+                    Toggle("Save as Draft", isOn: $model.isDraft)
+                        .help("Only you can see a draft. GitHub creates the tag when you publish it.")
+                }
             }
             Section("Release Notes") {
                 MarkdownEditor(text: $model.notes)
@@ -137,7 +143,9 @@ struct DropFormView: View {
                 Toggle("Add to CHANGELOG.md through a pull request", isOn: $model.updatesChangelog)
                     .help("Opens a pull request; nothing is pushed to the branch directly.")
             }
-            AssetsSection(model: model, isImporting: $isImporting)
+            if model.releaseAutomation == nil {
+                AssetsSection(model: model, isImporting: $isImporting)
+            }
         }
         .formStyle(.grouped)
         .disabled(model.stage == .planning)
@@ -148,6 +156,16 @@ struct DropFormView: View {
         ) { result in
             if case .success(let urls) = result { model.addAssets(urls) }
         }
+    }
+}
+
+extension DropFormView {
+    func automationNotice(_ automation: ReleaseAutomation) -> String {
+        let name = automation.name
+        if automation.startsOnTag {
+            return String(localized: "\(name) creates the GitHub Release on tag push. DROP pushes the tag and watches.")
+        }
+        return String(localized: "\(name) creates the GitHub Release. DROP pushes the tag, starts \(name) and watches.")
     }
 }
 
@@ -233,7 +251,8 @@ struct ReadyToDropView: View {
             Section {
                 ForEach(Array(plan.steps.enumerated()), id: \.offset) { index, step in
                     LabeledContent {
-                        Text(verbatim: "DROP").foregroundStyle(.secondary)
+                        Text(verbatim: step.performer.title)
+                            .foregroundStyle(step.performer == .drop ? Color.secondary : Color.orange)
                     } label: {
                         Text(verbatim: "\(index + 1). \(step.title)")
                     }

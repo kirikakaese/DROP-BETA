@@ -6,6 +6,14 @@ import Foundation
 public struct WorkflowSummary: Sendable, Equatable, Identifiable {
     public let workflow: GitHubWorkflow
     public let triggers: WorkflowTriggers
+    /// The workflow file as it is on the branch it was read from.
+    public let source: String
+
+    public init(workflow: GitHubWorkflow, triggers: WorkflowTriggers, source: String = "") {
+        self.workflow = workflow
+        self.triggers = triggers
+        self.source = source
+    }
 
     public var id: Int64 { workflow.id }
 }
@@ -28,7 +36,9 @@ public struct WorkflowService: Sendable {
         var summaries: [WorkflowSummary] = []
         for workflow in try await actions.workflows(slug) where workflow.isActive {
             let file = try? await repository.file(slug, path: workflow.path, ref: ref)
-            summaries.append(WorkflowSummary(workflow: workflow, triggers: WorkflowTriggers(yaml: file?.text ?? "")))
+            let source = file?.text ?? ""
+            let triggers = WorkflowTriggers(yaml: source)
+            summaries.append(WorkflowSummary(workflow: workflow, triggers: triggers, source: source))
         }
         return summaries
     }

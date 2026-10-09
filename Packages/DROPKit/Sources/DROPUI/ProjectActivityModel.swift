@@ -14,6 +14,11 @@ public final class ProjectActivityModel {
     public private(set) var auditLog: [AuditEntry] = []
     /// The commits since the last release on the default branch.
     public private(set) var unreleased: UnreleasedChanges?
+    /// The automation found in the repository and who performs each destination.
+    public private(set) var automation: AutomationReport?
+    /// Switching an External destination to Managed waits here for a confirmation naming the
+    /// automation that owns it.
+    public var pendingTakeover: DestinationSetting?
     public private(set) var isLoading = false
     public var error: DROPError?
 
@@ -39,6 +44,7 @@ public final class ProjectActivityModel {
         do {
             releases = try await services.releases.releases(project.slug)
             unreleased = try await services.changelog.unreleased(project.slug, branch: branch)
+            automation = try await services.automation.report(for: project, ref: branch)
         } catch {
             self.error = account.filter(error)
         }
@@ -77,6 +83,43 @@ public final class ProjectActivityModel {
         } catch {
             log(String(localized: "Deleting \(release.tagName) failed"), succeeded: false)
             self.error = account.filter(error)
+        }
+    }
+
+    /// Changes who performs a destination. Taking over from an automation needs `confirmTakeover()`.
+    public func setMode(_ mode: OwnershipMode, for destination: Destination) {
+        guard let current = automation?.setting(for: destination), current.mode != mode else { return }
+        var setting = current
+        setting.mode = mode
+        if mode == .external, setting.owner == nil {
+            setting.owner = automation?.findings.first { $0.destination == destination }?.owner
+        }
+        if current.mode == .external && mode == .managed {
+            pendingTakeover = setting
+        } else {
+            apply(setting)
+        }
+    }
+
+    public func confirmTakeover() {
+        guard let setting = pendingTakeover else { return }
+        pendingTakeover = nil
+        apply(setting)
+    }
+
+    private func apply(_ setting: DestinationSetting) {
+        do {
+            try services.automation.save(setting, for: project)
+            if let report = automation {
+                automation = AutomationReport(
+                    workflows: report.workflows,
+                    findings: report.findings,
+                    settings: report.settings.map { $0.destination == setting.destination ? setting : $0 }
+                )
+            }
+            log(String(localized: "\(setting.destination.title) is now \(setting.mode.title)"), succeeded: true)
+        } catch {
+            self.error = .wrapping(error)
         }
     }
 

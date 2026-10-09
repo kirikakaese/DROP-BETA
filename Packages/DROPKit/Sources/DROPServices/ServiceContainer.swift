@@ -49,8 +49,19 @@ public struct ServiceContainer: Sendable {
         WorkflowService(actions: actions, repository: repository, github: github)
     }
 
+    public var automation: AutomationService {
+        AutomationService(workflows: workflows, repository: repository, metadata: metadata)
+    }
+
     public var drops: DropService {
-        DropService(releases: releases, metadata: metadata, notifier: notifier, changelog: changelog)
+        DropService(
+            releases: releases,
+            metadata: metadata,
+            notifier: notifier,
+            changelog: changelog,
+            repository: repository,
+            actions: actions
+        )
     }
 
     /// The services the app runs with.
