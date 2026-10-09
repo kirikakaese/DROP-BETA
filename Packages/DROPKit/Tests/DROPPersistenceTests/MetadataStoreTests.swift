@@ -121,7 +121,8 @@ struct MetadataStoreTests {
 
         let stored = try store.destinationSettings(projectID: project.id)
         #expect(stored.count == 2)
-        #expect(stored.first { $0.destination == .homebrewTap }?.mode == .off)
+        let tap = stored.first { $0.destination == .homebrewTap }
+        #expect(tap?.mode == .off)
 
         try store.deleteProject(id: project.id)
         #expect(try store.destinationSettings(projectID: project.id).isEmpty)

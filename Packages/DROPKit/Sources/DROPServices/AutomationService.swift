@@ -10,6 +10,12 @@ public struct AutomationReport: Sendable, Equatable {
     public let findings: [AutomationFinding]
     public let settings: [DestinationSetting]
 
+    public init(workflows: [WorkflowSummary], findings: [AutomationFinding], settings: [DestinationSetting]) {
+        self.workflows = workflows
+        self.findings = findings
+        self.settings = settings
+    }
+
     public func setting(for destination: Destination) -> DestinationSetting {
         settings.first { $0.destination == destination }
             ?? DestinationSetting(destination: destination, mode: .off)
