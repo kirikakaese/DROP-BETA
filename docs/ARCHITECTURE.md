@@ -20,6 +20,10 @@ The app target (`App/Sources`) creates the live `ServiceContainer`, the models a
 - **Services are protocols.** Every service has a live implementation and an in-memory one;
   tests and previews use the in-memory ones and never touch the network or your real data.
 - **Secrets only in the Keychain.** The metadata database, logs and errors never contain tokens.
+- **One owner for tokens.** `AuthService` (an actor in `DROPServices`) signs in with device flow,
+  keeps the tokens in the Keychain and refreshes them. `GitHubClient` asks it for a token for each
+  request and, after a 401, for a replacement once. Because refresh tokens are single-use, a
+  refresh that is already running is shared by every caller that needs one.
 - **Nothing is written before the plan.** Any action that changes something on GitHub or in a
   registry is first listed on the "Ready to Drop" plan and only runs after you press **Drop**.
 - **One repository slug.** DROP's own repository is named only in `Config/Repo.xcconfig`. It

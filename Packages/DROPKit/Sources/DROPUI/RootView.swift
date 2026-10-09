@@ -1,12 +1,15 @@
 import DROPCore
+import DROPGitHub
 import SwiftUI
 
 /// The main window: projects in the sidebar, the selected project on the right.
 public struct RootView: View {
     @Bindable private var model: ProjectsModel
+    @Bindable private var account: AccountModel
 
     public init(model: ProjectsModel) {
         self.model = model
+        account = model.account
     }
 
     public var body: some View {
@@ -15,7 +18,11 @@ public struct RootView: View {
                 .navigationSplitViewColumnWidth(min: 200, ideal: 240)
         } detail: {
             if let project = model.selectedProject {
-                ProjectDetailView(project: project)
+                ProjectDetailView(
+                    project: project,
+                    repository: model.repositories[project.id],
+                    isMissing: model.missing.contains(project.id)
+                )
             } else {
                 ContentUnavailableView(
                     "Select a Project",
@@ -25,7 +32,14 @@ public struct RootView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    model.isAddingProject = true
+                } label: {
+                    Label("Add Project", systemImage: "plus")
+                }
+                .help("Add a GitHub repository")
+                .disabled(!model.canAddProject)
                 Button {} label: {
                     Label(DropWording.actionTitle(version: nil), systemImage: "arrow.down.to.line")
                 }
@@ -33,18 +47,31 @@ public struct RootView: View {
                 .disabled(!model.canDrop)
             }
         }
-        .task { model.load() }
-        .alert(
-            model.error?.whatHappened ?? "",
-            isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } }),
-            presenting: model.error
-        ) { _ in
-            Button("OK") { model.error = nil }
-        } message: { error in
-            if let howToFix = error.howToFix {
-                Text(howToFix)
+        .task {
+            model.load()
+            await account.load()
+            await model.refreshFromGitHub()
+        }
+        .onChange(of: account.isSignedIn) { _, isSignedIn in
+            if isSignedIn { Task { await model.refreshFromGitHub() } }
+        }
+        .sheet(isPresented: $model.isAddingProject) {
+            AddProjectSheet(model: model)
+        }
+        .sheet(isPresented: signInSheetBinding) {
+            if let authorization = account.pendingAuthorization {
+                SignInSheet(account: account, authorization: authorization)
             }
         }
+        .errorAlert($model.error)
+        .errorAlert($account.error)
+    }
+
+    private var signInSheetBinding: Binding<Bool> {
+        Binding(
+            get: { account.pendingAuthorization != nil },
+            set: { if !$0 { account.cancelSignIn() } }
+        )
     }
 }
 
@@ -55,32 +82,99 @@ struct SidebarView: View {
         List(selection: $model.selection) {
             Section("Projects") {
                 ForEach(model.projects) { project in
-                    Label(project.slug.description, systemImage: "shippingbox")
-                        .tag(project.id)
+                    Label {
+                        Text(verbatim: project.slug.description)
+                    } icon: {
+                        Image(systemName: icon(for: project))
+                    }
+                    .tag(project.id)
+                    .contextMenu {
+                        Button("Remove from DROP") { model.removeProject(id: project.id) }
+                    }
                 }
             }
         }
         .listStyle(.sidebar)
+        .safeAreaInset(edge: .top) {
+            if model.account.phase == .sessionExpired {
+                SessionEndedBanner(account: model.account)
+            }
+        }
         .overlay {
             if model.projects.isEmpty {
-                ContentUnavailableView(
-                    "No Projects",
-                    systemImage: "tray",
-                    description: Text("Sign in with GitHub to add your repositories.")
-                )
+                EmptyProjectsView(model: model)
+            }
+        }
+    }
+
+    private func icon(for project: Project) -> String {
+        model.missing.contains(project.id) ? "exclamationmark.triangle" : "shippingbox"
+    }
+}
+
+private struct EmptyProjectsView: View {
+    let model: ProjectsModel
+
+    var body: some View {
+        if model.account.isSignedIn {
+            ContentUnavailableView {
+                Label("No Projects", systemImage: "tray")
+            } description: {
+                Text("Add a repository to start dropping.")
+            } actions: {
+                Button("Add Project…") { model.isAddingProject = true }
+            }
+        } else {
+            ContentUnavailableView {
+                Label("No Projects", systemImage: "tray")
+            } description: {
+                Text("Sign in with GitHub to add your repositories.")
+            } actions: {
+                Button("Sign In with GitHub…") { model.account.signIn() }
+                    .disabled(!model.account.canSignIn)
             }
         }
     }
 }
 
+private struct SessionEndedBanner: View {
+    let account: AccountModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("Your GitHub session has ended.", systemImage: "person.crop.circle.badge.exclamationmark")
+                .font(.callout)
+            Button("Sign In Again") { account.signIn() }
+                .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(.yellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
+        .padding(.horizontal, 8)
+    }
+}
+
 struct ProjectDetailView: View {
     let project: Project
+    let repository: GitHubRepository?
+    let isMissing: Bool
 
     var body: some View {
         Form {
+            if isMissing {
+                Section {
+                    Label(
+                        "GitHub can't find this repository anymore. It may be deleted, or you lost access.",
+                        systemImage: "exclamationmark.triangle"
+                    )
+                }
+            }
             Section {
                 LabeledContent("Repository") {
                     Link(project.slug.description, destination: project.slug.webURL)
+                }
+                if let repository {
+                    RepositoryDetails(repository: repository)
                 }
                 LabeledContent("Added") {
                     Text(project.addedAt, format: .dateTime.day().month().year())
@@ -89,5 +183,45 @@ struct ProjectDetailView: View {
         }
         .formStyle(.grouped)
         .navigationTitle(project.slug.name)
+    }
+}
+
+private struct RepositoryDetails: View {
+    let repository: GitHubRepository
+
+    var body: some View {
+        LabeledContent("Visibility") {
+            if repository.isPrivate { Text("Private") } else { Text("Public") }
+        }
+        LabeledContent("Default Branch") {
+            Text(verbatim: repository.defaultBranch).monospaced()
+        }
+        if let summary = repository.summary, !summary.isEmpty {
+            LabeledContent("Description") {
+                Text(verbatim: summary)
+            }
+        }
+        if repository.isArchived {
+            LabeledContent("Status") {
+                Text("Archived")
+            }
+        }
+    }
+}
+
+extension View {
+    /// Shows `error` as an alert with its explanation and fix.
+    func errorAlert(_ error: Binding<DROPError?>) -> some View {
+        alert(
+            error.wrappedValue?.whatHappened ?? "",
+            isPresented: Binding(get: { error.wrappedValue != nil }, set: { if !$0 { error.wrappedValue = nil } }),
+            presenting: error.wrappedValue
+        ) { _ in
+            Button("OK") { error.wrappedValue = nil }
+        } message: { presented in
+            if let howToFix = presented.howToFix {
+                Text(howToFix)
+            }
+        }
     }
 }

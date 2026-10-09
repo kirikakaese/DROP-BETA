@@ -35,5 +35,7 @@
 	<string>NSApplication</string>
 	<key>DROPRepositorySlug</key>
 	<string>$(DROP_REPO_SLUG)</string>
+	<key>DROPOAuthClientID</key>
+	<string>$(DROP_OAUTH_CLIENT_ID)</string>
 </dict>
 </plist>

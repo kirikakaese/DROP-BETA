@@ -30,15 +30,15 @@ let package = Package(
         // Protocol-based services with live and in-memory implementations.
         .target(name: "DROPServices", dependencies: ["DROPCore", "DROPGitHub", "DROPRegistries", "DROPPersistence"]),
         // SwiftUI feature views. Depends on service protocols only.
-        .target(name: "DROPUI", dependencies: ["DROPCore", "DROPServices"]),
+        .target(name: "DROPUI", dependencies: ["DROPCore", "DROPGitHub", "DROPServices"]),
         // Test-only fixtures. Not part of any product, so it never ships in the app.
-        .target(name: "DROPTestFixtures", dependencies: ["DROPCore"]),
+        .target(name: "DROPTestFixtures", dependencies: ["DROPCore", "DROPGitHub"]),
 
         .testTarget(name: "DROPCoreTests", dependencies: ["DROPCore", "DROPTestFixtures"]),
         .testTarget(name: "DROPGitHubTests", dependencies: ["DROPGitHub", "DROPTestFixtures"]),
         .testTarget(name: "DROPRegistriesTests", dependencies: ["DROPRegistries"]),
         .testTarget(name: "DROPPersistenceTests", dependencies: ["DROPPersistence", "DROPTestFixtures"]),
-        .testTarget(name: "DROPServicesTests", dependencies: ["DROPServices", "DROPTestFixtures"]),
-        .testTarget(name: "DROPUITests", dependencies: ["DROPUI", "DROPServices", "DROPTestFixtures"]),
+        .testTarget(name: "DROPServicesTests", dependencies: ["DROPServices", "DROPGitHub", "DROPTestFixtures"]),
+        .testTarget(name: "DROPUITests", dependencies: ["DROPUI", "DROPServices", "DROPGitHub", "DROPTestFixtures"]),
     ]
 )

@@ -6,8 +6,8 @@ next version, triggers and watches your GitHub Actions builds, and publishes to 
 GHCR and npm. It never fights the automation you already have: anything a workflow already does,
 DROP watches and verifies instead of doing it twice.
 
-> **Status:** early development (0.1). The app shell is in place; the features below are being
-> built one by one and are not usable yet. Please
+> **Status:** early development (0.1). Signing in with GitHub and adding projects work; the
+> other features below are being built one by one. Please
 > [open an issue](https://github.com/kirikakaese/DROP-BETA/issues) if something looks wrong.
 
 ## Features (planned)
@@ -37,7 +37,8 @@ DROP watches and verifies instead of doing it twice.
 ## Building from source
 
 1. Install Xcode 16 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
-2. Optionally copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` and set your Team ID.
+2. Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` and set the GitHub Client ID
+   (and optionally your Team ID). [SETUP.md](SETUP.md) walks you through it.
 3. Run `xcodegen generate` and open `DROP.xcodeproj`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for tests and linting, and

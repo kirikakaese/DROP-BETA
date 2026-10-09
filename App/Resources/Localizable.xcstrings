@@ -21,6 +21,66 @@
         }
       }
     },
+    "Account": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account"
+          }
+        }
+      }
+    },
+    "Add": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzufügen"
+          }
+        }
+      }
+    },
+    "Add Project": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projekt hinzufügen"
+          }
+        }
+      }
+    },
+    "Add Project…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projekt hinzufügen …"
+          }
+        }
+      }
+    },
+    "Add a GitHub repository": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein GitHub-Repository hinzufügen"
+          }
+        }
+      }
+    },
+    "Add a repository to start dropping.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge ein Repository hinzu, um mit dem Droppen zu beginnen."
+          }
+        }
+      }
+    },
     "Added": {
       "localizations": {
         "de": {
@@ -31,12 +91,72 @@
         }
       }
     },
+    "Archived": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archiviert"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Check your internet connection and try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüfe deine Internetverbindung und versuche es erneut."
+          }
+        }
+      }
+    },
     "Choose a project in the sidebar to see its drops.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Wähle ein Projekt in der Seitenleiste, um seine Drops zu sehen."
+          }
+        }
+      }
+    },
+    "Copy Code": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code kopieren"
+          }
+        }
+      }
+    },
+    "Create tags, GitHub Releases, assets and pull requests in public and private repositories.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tags, GitHub Releases, Assets und Pull Requests in öffentlichen und privaten Repositories erstellen."
+          }
+        }
+      }
+    },
+    "DROP asks for workflow access only when you let it add a release workflow to a repository.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP fragt nach Workflow-Zugriff nur, wenn du es einen Release-Workflow zu einem Repository hinzufügen lässt."
           }
         }
       }
@@ -61,6 +181,26 @@
         }
       }
     },
+    "DROP could not reach GitHub.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP konnte GitHub nicht erreichen."
+          }
+        }
+      }
+    },
+    "DROP could not use the Keychain.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP konnte den Schlüsselbund nicht verwenden."
+          }
+        }
+      }
+    },
     "DROP is using a temporary list for now, so projects you add are not kept. Quit and reopen DROP to try again.": {
       "localizations": {
         "de": {
@@ -77,6 +217,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "DROP: neue Versionen als GitHub Releases und in Paket-Registries droppen.\nVeröffentlicht unter der GNU General Public License v3.0."
+          }
+        }
+      }
+    },
+    "Default Branch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard-Branch"
+          }
+        }
+      }
+    },
+    "Description": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beschreibung"
+          }
+        }
+      }
+    },
+    "Device flow is turned off for DROP's OAuth App on GitHub.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device Flow ist für DROPs OAuth-App auf GitHub ausgeschaltet."
           }
         }
       }
@@ -111,12 +281,42 @@
         }
       }
     },
+    "Enter it as owner/name or paste its github.com address.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gib es als owner/name ein oder füge seine github.com-Adresse ein."
+          }
+        }
+      }
+    },
+    "Enter this code on GitHub to let DROP use your account:": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gib diesen Code auf GitHub ein, damit DROP deinen Account verwenden darf:"
+          }
+        }
+      }
+    },
     "General": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Allgemein"
+          }
+        }
+      }
+    },
+    "GitHub": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub"
           }
         }
       }
@@ -131,12 +331,82 @@
         }
       }
     },
+    "GitHub can't find this repository anymore. It may be deleted, or you lost access.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub findet dieses Repository nicht mehr. Es wurde vielleicht gelöscht, oder du hast keinen Zugriff mehr."
+          }
+        }
+      }
+    },
+    "GitHub couldn't find that repository, or your account can't see it.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub hat dieses Repository nicht gefunden, oder dein Account kann es nicht sehen."
+          }
+        }
+      }
+    },
+    "GitHub doesn't know this build's Client ID.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub kennt die Client-ID dieses Builds nicht."
+          }
+        }
+      }
+    },
+    "GitHub refused the request (HTTP %lld).": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub hat die Anfrage abgelehnt (HTTP %lld)."
+          }
+        }
+      }
+    },
+    "GitHub sent an answer DROP doesn't understand.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub hat eine Antwort geschickt, die DROP nicht versteht."
+          }
+        }
+      }
+    },
+    "GitHub's rate limit for your account is used up.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHubs Rate-Limit für deinen Account ist aufgebraucht."
+          }
+        }
+      }
+    },
     "Homebrew Tap": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Homebrew-Tap"
+          }
+        }
+      }
+    },
+    "Make sure your login keychain is unlocked, then try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle sicher, dass dein Anmeldeschlüsselbund entsperrt ist, und versuche es erneut."
           }
         }
       }
@@ -161,12 +431,42 @@
         }
       }
     },
+    "Open GitHub": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub öffnen"
+          }
+        }
+      }
+    },
+    "Permissions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Berechtigungen"
+          }
+        }
+      }
+    },
     "Plan the next drop of this project": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Den nächsten Drop dieses Projekts planen"
+          }
+        }
+      }
+    },
+    "Private": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privat"
           }
         }
       }
@@ -191,12 +491,42 @@
         }
       }
     },
+    "Public": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffentlich"
+          }
+        }
+      }
+    },
+    "Remove from DROP": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus DROP entfernen"
+          }
+        }
+      }
+    },
     "Repository": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Repository"
+          }
+        }
+      }
+    },
+    "Review or revoke DROP's access on GitHub": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROPs Zugriff auf GitHub prüfen oder widerrufen"
           }
         }
       }
@@ -221,12 +551,112 @@
         }
       }
     },
+    "Set DROP_OAUTH_CLIENT_ID in Config/Local.xcconfig as described in SETUP.md.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setze DROP_OAUTH_CLIENT_ID in Config/Local.xcconfig wie in SETUP.md beschrieben."
+          }
+        }
+      }
+    },
+    "Sign In Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut anmelden"
+          }
+        }
+      }
+    },
+    "Sign In with GitHub": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit GitHub anmelden"
+          }
+        }
+      }
+    },
+    "Sign In with GitHub…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit GitHub anmelden …"
+          }
+        }
+      }
+    },
+    "Sign Out": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abmelden"
+          }
+        }
+      }
+    },
+    "Sign in again to keep using DROP with GitHub.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich erneut an, um DROP weiter mit GitHub zu verwenden."
+          }
+        }
+      }
+    },
+    "Sign in with GitHub in Settings → Account.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich unter Einstellungen → Account mit GitHub an."
+          }
+        }
+      }
+    },
     "Sign in with GitHub to add your repositories.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Melde dich mit GitHub an, um deine Repositories hinzuzufügen."
+          }
+        }
+      }
+    },
+    "Signing in was cancelled on GitHub.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Anmeldung wurde auf GitHub abgebrochen."
+          }
+        }
+      }
+    },
+    "Signing in with GitHub didn't work.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Anmeldung mit GitHub hat nicht funktioniert."
+          }
+        }
+      }
+    },
+    "Something went wrong.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etwas ist schiefgelaufen."
           }
         }
       }
@@ -241,6 +671,56 @@
         }
       }
     },
+    "Status": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        }
+      }
+    },
+    "The sign-in code expired before it was approved.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Anmeldecode ist abgelaufen, bevor er bestätigt wurde."
+          }
+        }
+      }
+    },
+    "This build has no GitHub Client ID, so it can't sign in. See SETUP.md.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Build hat keine GitHub-Client-ID und kann sich deshalb nicht anmelden. Siehe SETUP.md."
+          }
+        }
+      }
+    },
+    "This build of DROP has no GitHub Client ID.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Build von DROP hat keine GitHub-Client-ID."
+          }
+        }
+      }
+    },
+    "Try signing in again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versuche, dich erneut anzumelden."
+          }
+        }
+      }
+    },
     "Version": {
       "localizations": {
         "de": {
@@ -251,8 +731,98 @@
         }
       }
     },
+    "Visibility": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichtbarkeit"
+          }
+        }
+      }
+    },
+    "Wait a few minutes and try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warte ein paar Minuten und versuche es erneut."
+          }
+        }
+      }
+    },
+    "Waiting for you to approve DROP on GitHub…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warte darauf, dass du DROP auf GitHub bestätigst …"
+          }
+        }
+      }
+    },
+    "You're not signed in to GitHub.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du bist nicht bei GitHub angemeldet."
+          }
+        }
+      }
+    },
+    "Your GitHub session has ended.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine GitHub-Sitzung ist abgelaufen."
+          }
+        }
+      }
+    },
+    "Your GitHub session has ended. Sign in again to keep using DROP with GitHub.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine GitHub-Sitzung ist abgelaufen. Melde dich erneut an, um DROP weiter mit GitHub zu verwenden."
+          }
+        }
+      }
+    },
+    "Your tokens are kept in the Keychain and never written anywhere else.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Tokens werden im Schlüsselbund aufbewahrt und nirgendwo sonst gespeichert."
+          }
+        }
+      }
+    },
     "npm": {
       "shouldTranslate": false
+    },
+    "owner/name or github.com address": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "owner/name oder github.com-Adresse"
+          }
+        }
+      }
+    },
+    "“%@” is not a GitHub repository.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„%@“ ist kein GitHub-Repository."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

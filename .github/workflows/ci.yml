@@ -71,12 +71,21 @@ jobs:
             -configuration Release \
             -destination 'generic/platform=macOS' \
             -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO
-      - name: Verify the universal binary and the repository slug
+            CODE_SIGNING_ALLOWED=NO \
+            DROP_OAUTH_CLIENT_ID="$DROP_OAUTH_CLIENT_ID"
+        env:
+          DROP_OAUTH_CLIENT_ID: ${{ vars.DROP_OAUTH_CLIENT_ID }}
+      - name: Verify the universal binary, the repository slug and the Client ID
+        env:
+          DROP_OAUTH_CLIENT_ID: ${{ vars.DROP_OAUTH_CLIENT_ID }}
         run: |
           app=build/Build/Products/Release/DROP.app
           lipo -archs "$app/Contents/MacOS/DROP" | tee /dev/stderr | grep -q "x86_64 arm64\|arm64 x86_64"
           test "$(plutil -extract DROPRepositorySlug raw "$app/Contents/Info.plist")" = "$(scripts/repo_slug.sh)"
+          # The variable isn't available to pull requests from forks; only check it when it is set.
+          if [ -n "$DROP_OAUTH_CLIENT_ID" ]; then
+            test "$(plutil -extract DROPOAuthClientID raw "$app/Contents/Info.plist")" = "$DROP_OAUTH_CLIENT_ID"
+          fi
 
   launch:
     name: App launch (ad-hoc signed)
@@ -102,7 +111,10 @@ jobs:
             CODE_SIGN_IDENTITY=- \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM= \
-            ENABLE_HARDENED_RUNTIME=NO
+            ENABLE_HARDENED_RUNTIME=NO \
+            DROP_OAUTH_CLIENT_ID="$DROP_OAUTH_CLIENT_ID"
+        env:
+          DROP_OAUTH_CLIENT_ID: ${{ vars.DROP_OAUTH_CLIENT_ID }}
       - name: Re-sign the app ad-hoc
         run: scripts/adhoc_sign.sh build/Build/Products/Release/DROP.app
       - name: Launch the app

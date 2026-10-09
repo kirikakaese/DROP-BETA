@@ -36,9 +36,12 @@ Until 1.0, only the latest release receives security fixes.
 
 | Threat | Mitigation |
 | --- | --- |
-| Token theft from disk | Tokens are stored only in the Keychain, never in files, `UserDefaults` or the metadata database. |
+| Token theft from disk | Tokens are stored only in the Keychain (`…ThisDeviceOnly`, never synchronized), never in files, `UserDefaults` or the metadata database. |
+| A client secret leaking from the app | There is none: DROP signs in with GitHub's device flow, which needs only the public Client ID. |
+| Losing the session to a refresh race | Refresh tokens are single-use, so refreshing runs in one actor; concurrent requests wait for the running refresh instead of starting their own. |
+| Tokens outliving their use | Access tokens expire and are refreshed shortly before; an expired or revoked refresh token ends the session and the tokens are deleted. |
 | Tokens leaking through logs or error messages | No telemetry. Unified logging never receives tokens; repository names are logged as `.private`. |
-| Token sent to the wrong server | The GitHub client only builds requests below `https://api.github.com` and refuses paths that point elsewhere. |
+| Token sent to the wrong server | The GitHub client only builds requests below `https://api.github.com` and refuses paths that point elsewhere. Redirects are followed only on the same host over HTTPS, and pagination links to other hosts are ignored. Requests use an ephemeral session without cookies or cache. |
 | Publishing something you didn't intend | Every write is listed on the "Ready to Drop" plan first; nothing touches the network until you press **Drop**. |
 | Racing or overwriting existing automation | Targets an existing workflow owns are marked External and only verified, never written. Switching one to Managed needs a confirmation that names the workflow. |
 | Changes to shared repositories | Writes to tap and bucket repositories go through pull requests unless you opt into direct pushes per target. |
