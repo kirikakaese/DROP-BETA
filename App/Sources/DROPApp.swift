@@ -7,12 +7,15 @@ import SwiftUI
 struct DROPApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     private let services: ServiceContainer
+    @State private var account: AccountModel
     @State private var projects: ProjectsModel
 
     init() {
         let services = ServiceContainer.live()
         self.services = services
-        _projects = State(initialValue: ProjectsModel(services: services))
+        let account = AccountModel(services: services)
+        _account = State(initialValue: account)
+        _projects = State(initialValue: ProjectsModel(services: services, account: account))
     }
 
     var body: some Scene {
@@ -32,7 +35,7 @@ struct DROPApp: App {
         }
 
         Settings {
-            SettingsView()
+            SettingsView(account: account)
         }
     }
 }

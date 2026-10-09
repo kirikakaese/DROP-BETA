@@ -4,3 +4,7 @@
 // Find it in Xcode → Settings → Accounts → your team, or at
 // https://developer.apple.com/account under Membership details.
 DEVELOPMENT_TEAM =
+
+// Needed to sign in with GitHub. The Client ID of the "DROP" OAuth App, from
+// https://github.com/settings/developers (public; there is no client secret). See SETUP.md.
+DROP_OAUTH_CLIENT_ID =

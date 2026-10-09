@@ -42,6 +42,14 @@ struct MetadataStoreTests {
         #expect(try store.allProjects().count == 1)
     }
 
+    @Test(arguments: try stores())
+    func keepsTheRepositoryID(_ store: any MetadataStoring) throws {
+        var project = Fixtures.project("octocat/Hello-World")
+        project.repositoryID = 1_296_269
+        try store.saveProject(project)
+        #expect(try store.allProjects().first?.repositoryID == 1_296_269)
+    }
+
     @Test func createsTheDatabaseFileWithOwnerOnlyPermissions() throws {
         let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

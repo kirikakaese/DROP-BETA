@@ -49,6 +49,12 @@ public final class GRDBMetadataStore: MetadataStoring, Sendable {
                 table.uniqueKey(["owner", "name"])
             }
         }
+        // GitHub's repository ID, so a renamed or moved repository is still found.
+        migrator.registerMigration("v2") { db in
+            try db.alter(table: "project") { table in
+                table.add(column: "repositoryID", .integer)
+            }
+        }
         return migrator
     }
 
@@ -83,12 +89,14 @@ private struct ProjectRecord: Codable, FetchableRecord, PersistableRecord {
     var id: String
     var owner: String
     var name: String
+    var repositoryID: Int64?
     var addedAt: Date
 
     init(_ project: Project) {
         id = project.id.uuidString
         owner = project.slug.owner
         name = project.slug.name
+        repositoryID = project.repositoryID
         addedAt = project.addedAt
     }
 
@@ -97,6 +105,6 @@ private struct ProjectRecord: Codable, FetchableRecord, PersistableRecord {
         guard let uuid = UUID(uuidString: id), let slug = RepositorySlug(owner: owner, name: name) else {
             return nil
         }
-        return Project(id: uuid, slug: slug, addedAt: addedAt)
+        return Project(id: uuid, slug: slug, repositoryID: repositoryID, addedAt: addedAt)
     }
 }

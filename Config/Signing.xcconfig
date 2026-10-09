@@ -3,8 +3,12 @@
 //
 // DEVELOPMENT_TEAM: optional. Without a team, Xcode signs ad-hoc ("Sign to Run Locally"),
 // which is also how releases are built.
+// DROP_OAUTH_CLIENT_ID: the Client ID of DROP's GitHub OAuth App (public, not a secret). Without
+// it, the app runs but can't sign in. CI and release builds get it from the repository variable
+// of the same name; see SETUP.md.
 
 DEVELOPMENT_TEAM =
+DROP_OAUTH_CLIENT_ID =
 
 #include "Repo.xcconfig"
 #include? "Local.xcconfig"
