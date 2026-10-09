@@ -125,7 +125,8 @@ struct DropServiceTests {
         #expect(record.releaseURL == release.htmlURL)
         let audit = try metadata.auditEntries(projectID: project.id, limit: 20)
         #expect(audit.first?.message == "Dropped v1.2.3")
-        #expect(audit.allSatisfy(\.succeeded))
+        let allSucceeded = audit.allSatisfy(\.succeeded)
+        #expect(allSucceeded)
         #expect(await notifier.notifications == ["dropped v1.2.3"])
     }
 
@@ -169,7 +170,9 @@ struct DropServiceTests {
         let record = try #require(try metadata.dropRecords(projectID: project.id).first)
         #expect(record.outcome == .failed)
         #expect(record.failedStep == "Upload app.zip")
-        #expect(try metadata.auditEntries(projectID: project.id, limit: 20).contains { !$0.succeeded })
+        let audit = try metadata.auditEntries(projectID: project.id, limit: 20)
+        let hasFailure = audit.contains { !$0.succeeded }
+        #expect(hasFailure)
         #expect(await notifier.notifications == ["failed v1.2.3 at Upload app.zip"])
 
         // Dropping again picks up where it stopped.
