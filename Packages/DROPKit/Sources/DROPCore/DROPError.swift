@@ -9,6 +9,8 @@ public struct DROPError: Error, Sendable, Equatable {
         case invalidArgument
         case storage
         case keychain
+        /// A local file could not be read or written.
+        case fileSystem
         /// A project or other item with the same name already exists.
         case alreadyExists
         /// GitHub or a registry could not be reached (offline, DNS, TLS, timeout).

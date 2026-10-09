@@ -102,14 +102,3 @@ struct ProjectsModelTests {
         #expect(try await github.repository(id: 42).id == 42)
     }
 }
-
-@Suite("DropWording")
-struct DropWordingTests {
-    @Test func namesTheVersionWhenItIsKnown() {
-        #expect(DropWording.actionTitle(version: nil) == "Drop")
-        #expect(DropWording.actionTitle(version: "") == "Drop")
-        #expect(DropWording.actionTitle(version: "1.2.3") == "Drop v1.2.3")
-        #expect(DropWording.actionTitle(version: "v1.2.3-beta.1") == "Drop v1.2.3-beta.1")
-        #expect(DropWording.menuTitle == "Drop…")
-    }
-}

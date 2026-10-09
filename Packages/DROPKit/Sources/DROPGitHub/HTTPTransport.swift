@@ -5,6 +5,8 @@ import Foundation
 /// ever touches the network.
 public protocol HTTPTransport: Sendable {
     func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse)
+    /// Sends `request` with the file's contents as the body, streamed from disk.
+    func upload(_ request: URLRequest, fromFile file: URL) async throws -> (Data, HTTPURLResponse)
 }
 
 /// `HTTPTransport` over an ephemeral `URLSession`: no cookies, no cache, HTTPS only, and redirects
@@ -26,13 +28,24 @@ public struct URLSessionTransport: HTTPTransport {
     }
 
     public func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        try await perform(request) { try await session.data(for: request) }
+    }
+
+    public func upload(_ request: URLRequest, fromFile file: URL) async throws -> (Data, HTTPURLResponse) {
+        try await perform(request) { try await session.upload(for: request, fromFile: file) }
+    }
+
+    private func perform(
+        _ request: URLRequest,
+        _ operation: () async throws -> (Data, URLResponse)
+    ) async throws -> (Data, HTTPURLResponse) {
         guard request.url?.scheme == "https" else {
             throw DROPError(.invalidArgument, whatHappened: String(localized: "DROP built an invalid GitHub request."))
         }
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await session.data(for: request)
+            (data, response) = try await operation()
         } catch let error as URLError {
             if error.code == .cancelled { throw CancellationError() }
             throw DROPError.network(details: error.localizedDescription)

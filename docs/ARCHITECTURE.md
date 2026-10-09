@@ -26,6 +26,9 @@ The app target (`App/Sources`) creates the live `ServiceContainer`, the models a
   refresh that is already running is shared by every caller that needs one.
 - **Nothing is written before the plan.** Any action that changes something on GitHub or in a
   registry is first listed on the "Ready to Drop" plan and only runs after you press **Drop**.
+  `DropService.plan` only reads (the existing GitHub Release, whether the tag exists) and computes
+  checksums locally; `DropService.execute` is the only code that writes, and it records every step
+  in the project's history and audit log.
 - **One repository slug.** DROP's own repository is named only in `Config/Repo.xcconfig`. It
   reaches the code through the `DROPRepositorySlug` Info.plist key (`AppRepository.slug()`) and
   the scripts through `scripts/repo_slug.sh`. CI checks that it matches the repository it runs in.

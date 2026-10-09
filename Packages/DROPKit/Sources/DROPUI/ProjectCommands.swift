@@ -1,3 +1,4 @@
+import DROPCore
 import SwiftUI
 
 /// File → Add Project… and the Project menu. Drop… opens the plan for the selected project;
@@ -16,7 +17,7 @@ public struct ProjectCommands: Commands {
                 .disabled(!model.canAddProject)
         }
         CommandMenu("Project") {
-            Button(DropWording.menuTitle) {}
+            Button(DropWording.menuTitle) { model.startDrop() }
                 .keyboardShortcut(.return, modifiers: .command)
                 .disabled(!model.canDrop)
         }

@@ -40,9 +40,34 @@ public final class ProjectsModel {
 
     public var canAddProject: Bool { account.isSignedIn }
 
-    /// Whether Project → Drop… is available. Dropping arrives with GitHub Release support, so it
-    /// stays off for now.
-    public var canDrop: Bool { false }
+    /// The drop in progress or being prepared, shown as a sheet.
+    public var currentDrop: DropModel?
+    /// Changes whenever a drop finishes, so the project's activity reloads.
+    public private(set) var dropsFinished = 0
+
+    /// Whether Project → Drop… is available: a project is selected, GitHub still has it, and you're
+    /// signed in.
+    public var canDrop: Bool {
+        guard let project = selectedProject else { return false }
+        return account.isSignedIn && !missing.contains(project.id) && currentDrop == nil
+    }
+
+    /// Opens the drop sheet for the selected project.
+    public func startDrop() {
+        guard canDrop, let project = selectedProject else { return }
+        currentDrop = DropModel(
+            project: project,
+            repository: repositories[project.id],
+            services: services,
+            account: account
+        ) { [weak self] in
+            self?.dropsFinished += 1
+        }
+    }
+
+    public func activityModel(for project: Project) -> ProjectActivityModel {
+        ProjectActivityModel(project: project, services: services, account: account)
+    }
 
     public func load() {
         do {

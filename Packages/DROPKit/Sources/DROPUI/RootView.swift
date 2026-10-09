@@ -18,11 +18,7 @@ public struct RootView: View {
                 .navigationSplitViewColumnWidth(min: 200, ideal: 240)
         } detail: {
             if let project = model.selectedProject {
-                ProjectDetailView(
-                    project: project,
-                    repository: model.repositories[project.id],
-                    isMissing: model.missing.contains(project.id)
-                )
+                ProjectDetailView(model: model, project: project)
             } else {
                 ContentUnavailableView(
                     "Select a Project",
@@ -40,7 +36,9 @@ public struct RootView: View {
                 }
                 .help("Add a GitHub repository")
                 .disabled(!model.canAddProject)
-                Button {} label: {
+                Button {
+                    model.startDrop()
+                } label: {
                     Label(DropWording.actionTitle(version: nil), systemImage: "arrow.down.to.line")
                 }
                 .help("Plan the next drop of this project")
@@ -58,6 +56,11 @@ public struct RootView: View {
         .sheet(isPresented: $model.isAddingProject) {
             AddProjectSheet(model: model)
         }
+        .sheet(isPresented: dropSheetBinding) {
+            if let drop = model.currentDrop {
+                DropSheet(model: drop) { model.currentDrop = nil }
+            }
+        }
         .sheet(isPresented: signInSheetBinding) {
             if let authorization = account.pendingAuthorization {
                 SignInSheet(account: account, authorization: authorization)
@@ -65,6 +68,13 @@ public struct RootView: View {
         }
         .errorAlert($model.error)
         .errorAlert($account.error)
+    }
+
+    private var dropSheetBinding: Binding<Bool> {
+        Binding(
+            get: { model.currentDrop != nil },
+            set: { if !$0, model.currentDrop?.isRunning != true { model.currentDrop = nil } }
+        )
     }
 
     private var signInSheetBinding: Binding<Bool> {
@@ -154,39 +164,7 @@ private struct SessionEndedBanner: View {
     }
 }
 
-struct ProjectDetailView: View {
-    let project: Project
-    let repository: GitHubRepository?
-    let isMissing: Bool
-
-    var body: some View {
-        Form {
-            if isMissing {
-                Section {
-                    Label(
-                        "GitHub can't find this repository anymore. It may be deleted, or you lost access.",
-                        systemImage: "exclamationmark.triangle"
-                    )
-                }
-            }
-            Section {
-                LabeledContent("Repository") {
-                    Link(project.slug.description, destination: project.slug.webURL)
-                }
-                if let repository {
-                    RepositoryDetails(repository: repository)
-                }
-                LabeledContent("Added") {
-                    Text(project.addedAt, format: .dateTime.day().month().year())
-                }
-            }
-        }
-        .formStyle(.grouped)
-        .navigationTitle(project.slug.name)
-    }
-}
-
-private struct RepositoryDetails: View {
+struct RepositoryDetails: View {
     let repository: GitHubRepository
 
     var body: some View {
