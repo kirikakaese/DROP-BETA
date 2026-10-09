@@ -130,6 +130,8 @@ public final class InMemoryActionsService: ActionsServicing, Sendable {
         public var artifactFiles: [Int64: [String: String]] = [:]
         /// Every dispatch as `workflowID@ref`.
         public var dispatches: [String] = []
+
+        public init() {}
     }
 
     private let state: OSAllocatedUnfairLock<State>
