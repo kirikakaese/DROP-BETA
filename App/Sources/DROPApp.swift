@@ -10,6 +10,7 @@ struct DROPApp: App {
     @State private var account: AccountModel
     @State private var projects: ProjectsModel
     @State private var updates = UpdateModel()
+    @State private var appIcon: AppIconModel
 
     init() {
         #if DEBUG
@@ -22,6 +23,16 @@ struct DROPApp: App {
         let account = AccountModel(services: services)
         _account = State(initialValue: account)
         _projects = State(initialValue: ProjectsModel(services: services, account: account))
+        let appIcon = AppIconModel()
+        _appIcon = State(initialValue: appIcon)
+        // macOS shows the bundle's icon until launching has finished; the chosen one replaces it then.
+        _ = NotificationCenter.default.addObserver(
+            forName: NSApplication.didFinishLaunchingNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            MainActor.assumeIsolated { appIcon.apply() }
+        }
     }
 
     var body: some Scene {
@@ -47,7 +58,7 @@ struct DROPApp: App {
         }
 
         Settings {
-            SettingsView(account: account) {
+            SettingsView(account: account, appIcon: appIcon) {
                 UpdateSettingsView(model: updates)
             }
         }

@@ -441,6 +441,16 @@
         }
       }
     },
+    "App Icon": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App-Symbol"
+          }
+        }
+      }
+    },
     "Archived": {
       "localizations": {
         "de": {
@@ -451,12 +461,32 @@
         }
       }
     },
+    "Aromantic": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aromantisch"
+          }
+        }
+      }
+    },
     "Artifacts": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Artefakte"
+          }
+        }
+      }
+    },
+    "Asexual": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asexuell"
           }
         }
       }
@@ -517,6 +547,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Betas und Entwürfe werden nicht in Homebrew oder Scoop veröffentlicht."
+          }
+        }
+      }
+    },
+    "Bisexual": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bisexuell"
+          }
+        }
+      }
+    },
+    "Blue": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blau"
           }
         }
       }
@@ -687,6 +737,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schließen"
+          }
+        }
+      }
+    },
+    "Colors": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farben"
           }
         }
       }
@@ -917,6 +977,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "DROP öffnet einen Pull Request, der %@ hinzufügt. Ersetze den Build-Schritt vor dem Mergen."
+          }
+        }
+      }
+    },
+    "DROP shows this icon in the Dock while it's running. Finder and Launchpad keep the standard icon.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP zeigt dieses Symbol im Dock, solange es läuft. Finder und Launchpad zeigen weiterhin das Standardsymbol."
           }
         }
       }
@@ -1481,6 +1551,16 @@
         }
       }
     },
+    "Graphite": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graphit"
+          }
+        }
+      }
+    },
     "History": {
       "localizations": {
         "de": {
@@ -1627,6 +1707,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Neueste"
+          }
+        }
+      }
+    },
+    "Lesbian": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lesbisch"
           }
         }
       }
@@ -1821,6 +1911,16 @@
         }
       }
     },
+    "Nonbinary": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nichtbinär"
+          }
+        }
+      }
+    },
     "None": {
       "localizations": {
         "de": {
@@ -2001,6 +2101,16 @@
         }
       }
     },
+    "Pansexual": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pansexuell"
+          }
+        }
+      }
+    },
     "Paste the full or abbreviated SHA (7 to 40 hex characters).": {
       "localizations": {
         "de": {
@@ -2071,12 +2181,32 @@
         }
       }
     },
+    "Pride": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pride"
+          }
+        }
+      }
+    },
     "Private": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Privat"
+          }
+        }
+      }
+    },
+    "Progress Pride": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Progress Pride"
           }
         }
       }
@@ -2127,6 +2257,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pull Request"
+          }
+        }
+      }
+    },
+    "Rainbow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regenbogen"
           }
         }
       }
@@ -2197,6 +2337,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Repository"
+          }
+        }
+      }
+    },
+    "Restore Default": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard wiederherstellen"
           }
         }
       }
@@ -2501,6 +2651,16 @@
         }
       }
     },
+    "Silver": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Silber"
+          }
+        }
+      }
+    },
     "Since %@": {
       "localizations": {
         "de": {
@@ -2617,6 +2777,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ziel"
+          }
+        }
+      }
+    },
+    "Teal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Petrol"
           }
         }
       }
@@ -2747,6 +2917,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Titel"
+          }
+        }
+      }
+    },
+    "Transgender": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transgender"
           }
         }
       }

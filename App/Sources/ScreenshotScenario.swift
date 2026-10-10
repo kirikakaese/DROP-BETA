@@ -23,6 +23,7 @@ enum ScreenshotScenario: String, CaseIterable {
     case settingsGeneral = "settings-general"
     case settingsAccount = "settings-account"
     case settingsUpdates = "settings-updates"
+    case settingsAppIcon = "settings-app-icon"
 
     static var requested: ScreenshotScenario? {
         UserDefaults.standard.string(forKey: "DROPScreenshot").flatMap(Self.init(rawValue:))
@@ -52,7 +53,7 @@ enum ScreenshotScenario: String, CaseIterable {
             projects.account.signIn()
         case .addProject:
             projects.isAddingProject = true
-        case .settingsGeneral, .settingsAccount, .settingsUpdates:
+        case .settingsGeneral, .settingsAccount, .settingsUpdates, .settingsAppIcon:
             UserDefaults.standard.set(settingsTab, forKey: "settingsTab")
             NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
         case .run, .runWorkflow, .releaseWorkflow:
@@ -68,6 +69,7 @@ enum ScreenshotScenario: String, CaseIterable {
         switch self {
         case .settingsAccount: "account"
         case .settingsUpdates: "updates"
+        case .settingsAppIcon: "appIcon"
         default: "general"
         }
     }

@@ -12,10 +12,12 @@ public struct SettingsView<Updates: View>: View {
     /// The tab shown when Settings opens: the one you left it on.
     @AppStorage("settingsTab") private var tab = "general"
     private let account: AccountModel
+    private let appIcon: AppIconModel
     private let updates: Updates
 
-    public init(account: AccountModel, @ViewBuilder updates: () -> Updates) {
+    public init(account: AccountModel, appIcon: AppIconModel, @ViewBuilder updates: () -> Updates) {
         self.account = account
+        self.appIcon = appIcon
         self.updates = updates()
     }
 
@@ -29,6 +31,10 @@ public struct SettingsView<Updates: View>: View {
                 .frame(width: SettingsTab.width, height: SettingsTab.height)
                 .tabItem { Label("Account", systemImage: "person.crop.circle") }
                 .tag("account")
+            AppIconSettingsView(model: appIcon)
+                .frame(width: SettingsTab.width, height: 560)
+                .tabItem { Label("App Icon", systemImage: "app.badge") }
+                .tag("appIcon")
             if Updates.self != EmptyView.self {
                 updates
                     .frame(width: SettingsTab.width, height: SettingsTab.height)
@@ -41,8 +47,8 @@ public struct SettingsView<Updates: View>: View {
 
 extension SettingsView where Updates == EmptyView {
     /// Settings without an Updates tab, for previews and tests.
-    public init(account: AccountModel) {
-        self.init(account: account) { EmptyView() }
+    public init(account: AccountModel, appIcon: AppIconModel) {
+        self.init(account: account, appIcon: appIcon) { EmptyView() }
     }
 }
 

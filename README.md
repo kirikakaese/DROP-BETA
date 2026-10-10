@@ -34,6 +34,8 @@ DROP watches and verifies instead of doing it twice.
 - **Sign in with GitHub:** device flow, tokens only in the Keychain, refreshed before they
   expire.
 - **History:** every drop and every step is kept per project, without secrets.
+- **App icon:** pick DROP's Dock icon in Settings → App Icon: teal, graphite, blue, silver or one of
+  nine pride flags, the same styles as SMP.
 - **Updates itself:** DROP checks its GitHub Releases daily and installs an update only if it is
   signed with DROP's release key. Betas are offered only if you opt in.
 

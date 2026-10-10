@@ -49,3 +49,4 @@ capture 15-drop-form-de drop-form all -AppleLanguages "(de)" -AppleLocale de_DE
 capture 16-registry-setup registry-setup all
 capture 17-registry-dry-run registry-dry-run all
 capture 18-settings-updates settings-updates front
+capture 19-settings-app-icon settings-app-icon front
