@@ -7,10 +7,10 @@ Swift package `Packages/DROPKit`, split into modules with one job each:
 | --- | --- | --- |
 | `DROPCore` | Models (`Project`, `RepositorySlug`), `DROPError`, logging, paths. No UI, no networking. | – |
 | `DROPGitHub` | The GitHub REST client. Tokens are passed in per request, never stored. | Core |
-| `DROPRegistries` | Publishers for Homebrew, Scoop, GHCR and npm. | Core, GitHub |
-| `DROPPersistence` | The metadata store (GRDB/SQLite): projects, drop history, audit log. No secrets. | Core, GRDB |
+| `DROPRegistries` | Updates Homebrew casks and formulas and Scoop manifests, picks the asset they point at, finds files another automation writes. Text only, no I/O. | Core, GitHub |
+| `DROPPersistence` | The metadata store (GRDB/SQLite): projects, drop history, audit log, destination and registry settings. No secrets. | Core, GRDB |
 | `DROPServices` | Protocol-based services with live and in-memory implementations, and the `ServiceContainer`. | Core, GitHub, Registries, Persistence |
-| `DROPUI` | SwiftUI views and their `@Observable` models. Talks to services through protocols only. | Core, Services |
+| `DROPUI` | SwiftUI views and their `@Observable` models. Talks to services through protocols only. | Core, GitHub, Registries, Services |
 | `DROPTestFixtures` | Sample data for the tests. Never ships in the app. | Core |
 
 The app target (`App/Sources`) creates the live `ServiceContainer`, the models and the scenes.
@@ -41,3 +41,12 @@ The app target (`App/Sources`) creates the live `ServiceContainer`, the models a
   automated as External. DROP never writes to an External destination: when a workflow owns the
   GitHub Release, a drop only pushes the tag (or starts the workflow on it), waits for the run and
   checks the result. Taking a destination over needs a confirmation that names its automation.
+- **Registries without tokens.** For a Managed Homebrew tap or Scoop bucket, `RegistryService`
+  changes one file (`version`, `sha256`/`hash`, `url`) on a `drop/<name>-<version>` branch and
+  opens a pull request, or commits to the default branch if you chose that. Before anything is
+  written, the plan checks that no workflow of the project or the tap mentions the file, so a file
+  another automation writes (like a cask a release workflow bumps) is never touched. Betas and
+  drafts stay out of taps and buckets. GHCR and npm are published by a workflow in the project that
+  DROP starts on the tag (`WorkflowTemplate.ghcr` and `.npm` can be added through a pull request);
+  it signs in with the workflow's own `GITHUB_TOKEN` or npm's trusted publishing, so DROP never
+  holds a registry token. **Try It** runs the same code as a drop without the write.

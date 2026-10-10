@@ -64,6 +64,8 @@ public struct DropRequest: Hashable, Sendable {
     public var releaseAutomation: ReleaseAutomation?
     /// Registries an existing automation publishes to; DROP leaves them alone.
     public var externalDestinations: [DestinationSetting]
+    /// Registries DROP publishes to after the GitHub Release exists.
+    public var registries: [RegistrySetup]
 
     public init(
         projectID: UUID,
@@ -78,7 +80,8 @@ public struct DropRequest: Hashable, Sendable {
         includesChecksums: Bool = true,
         changelogBase: String? = nil,
         releaseAutomation: ReleaseAutomation? = nil,
-        externalDestinations: [DestinationSetting] = []
+        externalDestinations: [DestinationSetting] = [],
+        registries: [RegistrySetup] = []
     ) {
         self.projectID = projectID
         self.slug = slug
@@ -93,6 +96,7 @@ public struct DropRequest: Hashable, Sendable {
         self.changelogBase = changelogBase
         self.releaseAutomation = releaseAutomation
         self.externalDestinations = externalDestinations
+        self.registries = registries
     }
 
     public var releaseTitle: String {
@@ -130,6 +134,15 @@ public enum DropStep: Hashable, Sendable {
     case verifyGitHubRelease(tag: String, createdBy: String)
     /// A registry an existing automation publishes to; DROP leaves it alone.
     case leaveToAutomation(destination: Destination, owner: String)
+    /// Update the Homebrew or Scoop file in a tap or bucket repository, through a pull request or a
+    /// commit to its default branch.
+    case updateRegistryFile(destination: Destination, repository: String, path: String, viaPullRequest: Bool)
+    /// Read the file back and check that it names the new version.
+    case verifyRegistryFile(destination: Destination, repository: String, path: String)
+    /// Start the project's workflow that publishes to GHCR or npm, on the tag.
+    case dispatchPublishWorkflow(destination: Destination, name: String, workflowID: Int64, tag: String)
+    /// Wait while that workflow publishes.
+    case awaitPublishWorkflow(destination: Destination, name: String, workflowID: Int64, tag: String)
 
     /// A short description for the plan, the progress list and the history.
     public var title: String {
@@ -160,8 +173,39 @@ public enum DropStep: Hashable, Sendable {
             String(localized: "Build and create the GitHub Release")
         case .verifyGitHubRelease(let tag, _):
             String(localized: "Check that the GitHub Release \(tag) exists")
-        case .leaveToAutomation(let destination, _):
+        case .leaveToAutomation, .updateRegistryFile, .verifyRegistryFile, .dispatchPublishWorkflow,
+            .awaitPublishWorkflow:
+            registryTitle
+        }
+    }
+
+    private var registryTitle: String {
+        switch self {
+        case .leaveToAutomation(let destination, _), .awaitPublishWorkflow(let destination, _, _, _):
             String(localized: "Publish to \(destination.title)")
+        case .updateRegistryFile(_, let repository, let path, let viaPullRequest):
+            if viaPullRequest {
+                String(localized: "Open a pull request on \(repository) that updates \(path)")
+            } else {
+                String(localized: "Commit \(path) to \(repository)")
+            }
+        case .verifyRegistryFile(_, let repository, let path):
+            String(localized: "Check \(path) on \(repository)")
+        case .dispatchPublishWorkflow(let destination, let name, _, let tag):
+            String(localized: "Start \(name) on \(tag) to publish to \(destination.title)")
+        default:
+            ""
+        }
+    }
+
+    /// The registry a step publishes to, if it is one of a registry's steps.
+    public var registry: Destination? {
+        switch self {
+        case .updateRegistryFile(let destination, _, _, _), .verifyRegistryFile(let destination, _, _),
+            .dispatchPublishWorkflow(let destination, _, _, _), .awaitPublishWorkflow(let destination, _, _, _):
+            destination
+        default:
+            nil
         }
     }
 }
@@ -183,7 +227,7 @@ public enum Performer: Hashable, Sendable {
 extension DropStep {
     public var performer: Performer {
         switch self {
-        case .awaitWorkflow(let name, _, _): .automation(name)
+        case .awaitWorkflow(let name, _, _), .awaitPublishWorkflow(_, let name, _, _): .automation(name)
         case .leaveToAutomation(_, let owner): .automation((owner as NSString).lastPathComponent)
         default: .drop
         }
@@ -192,7 +236,9 @@ extension DropStep {
     /// Whether the step changes something on GitHub, as opposed to reading or waiting.
     public var writes: Bool {
         switch self {
-        case .verifyChecksums, .awaitWorkflow, .verifyGitHubRelease, .leaveToAutomation: false
+        case .verifyChecksums, .awaitWorkflow, .verifyGitHubRelease, .leaveToAutomation, .verifyRegistryFile,
+            .awaitPublishWorkflow:
+            false
         default: true
         }
     }

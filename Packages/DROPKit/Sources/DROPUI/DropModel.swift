@@ -45,6 +45,8 @@ public final class DropModel {
     public private(set) var changes: UnreleasedChanges?
     /// Who performs each destination, once loaded.
     public private(set) var automation: AutomationReport?
+    /// How DROP publishes the registries it manages, once loaded.
+    public private(set) var registrySetups: [RegistrySetup] = []
 
     /// The workflow that creates the GitHub Release, when an existing one owns it. DROP then only
     /// pushes the tag (or starts the workflow) and watches.
@@ -114,8 +116,31 @@ public final class DropModel {
             includesChecksums: includesChecksums,
             changelogBase: updatesChangelog ? (targetsCommit ? defaultBranch : targetBranch) : nil,
             releaseAutomation: releaseAutomation,
-            externalDestinations: automation?.externalRegistries ?? []
+            externalDestinations: automation?.externalRegistries ?? [],
+            registries: managedRegistries.compactMap { destination in
+                registrySetups.first { $0.destination == destination && $0.isComplete }
+            }
         )
+    }
+
+    /// The registries set to Managed.
+    private var managedRegistries: [Destination] {
+        automation?.settings.filter { $0.destination != .githubRelease && $0.mode == .managed }.map(\.destination)
+            ?? []
+    }
+
+    /// A registry set to Managed that isn't set up yet.
+    private var unconfiguredRegistry: Destination? {
+        managedRegistries.first { destination in
+            !registrySetups.contains { $0.destination == destination && $0.isComplete }
+        }
+    }
+
+    /// Explains why taps and buckets are skipped, when they are.
+    public var registryNotice: String? {
+        let writesFiles = managedRegistries.contains { $0 == .homebrewTap || $0 == .scoopBucket }
+        guard writesFiles, isPrerelease || isDraft else { return nil }
+        return String(localized: "Betas and drafts aren't published to Homebrew or Scoop.")
     }
 
     /// "Since v1.2.0: 2 features, 1 fix", for the version section of the form.
@@ -133,6 +158,7 @@ public final class DropModel {
     public func loadAutomation() async {
         do {
             automation = try await services.automation.report(for: project, ref: defaultBranch)
+            registrySetups = services.registries.setups(for: project)
         } catch {
             formError = account.filter(error)
         }
@@ -191,6 +217,10 @@ public final class DropModel {
     /// Builds the plan. This only reads from GitHub; nothing is written yet.
     public func review() async {
         guard canReview else { return }
+        if let destination = unconfiguredRegistry {
+            formError = .registryNotSetUp(destination)
+            return
+        }
         formError = nil
         stage = .planning
         do {

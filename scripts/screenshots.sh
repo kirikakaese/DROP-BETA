@@ -46,3 +46,5 @@ capture 12-settings-general settings-general front
 capture 13-settings-account settings-account front
 capture 14-projects-de projects all -AppleLanguages "(de)" -AppleLocale de_DE
 capture 15-drop-form-de drop-form all -AppleLanguages "(de)" -AppleLocale de_DE
+capture 16-registry-setup registry-setup all
+capture 17-registry-dry-run registry-dry-run all

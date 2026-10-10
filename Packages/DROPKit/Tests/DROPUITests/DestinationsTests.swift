@@ -53,4 +53,22 @@ struct DestinationsTests {
         #expect(activity.pendingTakeover == nil)
         #expect(activity.automation?.setting(for: .githubRelease).mode == .off)
     }
+
+    @Test func registriesCanBeManagedOnceSetUp() async throws {
+        let activity = await makeActivity()
+        activity.setMode(.managed, for: .scoopBucket)
+        #expect(activity.pendingTakeover == nil)
+        #expect(activity.automation?.setting(for: .scoopBucket).mode == .managed)
+
+        activity.editSetup(for: .scoopBucket)
+        var setup = try #require(activity.editingRegistry)
+        #expect(setup.repository == "octocat/scoop-bucket")
+        #expect(setup.path == "bucket/hello-world.json")
+        setup.assetPattern = "hello-{version}-windows.zip"
+        activity.saveSetup(setup)
+
+        #expect(activity.editingRegistry == nil)
+        #expect(activity.registrySetups[.scoopBucket] == setup)
+        #expect(activity.setup(for: .scoopBucket).isComplete)
+    }
 }

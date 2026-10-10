@@ -1,4 +1,5 @@
 import DROPCore
+import DROPRegistries
 import DROPServices
 import SwiftUI
 
@@ -27,28 +28,38 @@ private struct DestinationRow: View {
     let report: AutomationReport
     let setting: DestinationSetting
 
-    /// Registries can be left to an automation or turned off; DROP publishes them itself once it
-    /// supports them.
-    private var modes: [OwnershipMode] {
-        setting.destination == .githubRelease ? OwnershipMode.allCases : [.external, .off]
-    }
-
     private var finding: AutomationFinding? {
         report.findings.first { $0.destination == setting.destination }
     }
 
+    private var isManagedRegistry: Bool {
+        setting.destination != .githubRelease && setting.mode == .managed
+    }
+
+    private var setup: RegistrySetup { activity.setup(for: setting.destination) }
+
     var body: some View {
         LabeledContent {
-            Picker("Performed by", selection: Binding(
-                get: { setting.mode },
-                set: { activity.setMode($0, for: setting.destination) }
-            )) {
-                ForEach(modes, id: \.self) { mode in
-                    Text(mode.title).tag(mode)
+            HStack {
+                if isManagedRegistry {
+                    if setup.writesFile && activity.registrySetups[setting.destination]?.isComplete == true {
+                        Button("Try It…") { Task { await activity.preview(setting.destination) } }
+                            .disabled(activity.isPreviewing || activity.latest == nil)
+                            .help("Shows what DROP would write for the latest release, without writing anything.")
+                    }
+                    Button("Set Up…") { activity.editSetup(for: setting.destination) }
                 }
+                Picker("Performed by", selection: Binding(
+                    get: { setting.mode },
+                    set: { activity.setMode($0, for: setting.destination) }
+                )) {
+                    ForEach(OwnershipMode.allCases, id: \.self) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
+                .labelsHidden()
+                .fixedSize()
             }
-            .labelsHidden()
-            .fixedSize()
         } label: {
             Label {
                 VStack(alignment: .leading, spacing: 2) {
@@ -66,7 +77,7 @@ private struct DestinationRow: View {
     private var caption: String {
         switch setting.mode {
         case .managed:
-            return String(localized: "DROP does this.")
+            return isManagedRegistry ? registryCaption : String(localized: "DROP does this.")
         case .external:
             let owner = setting.ownerName ?? String(localized: "An automation")
             if let found = finding?.evidence {
@@ -75,6 +86,22 @@ private struct DestinationRow: View {
             return String(localized: "\(owner) does this. DROP watches and verifies.")
         case .off:
             return String(localized: "Not part of drops.")
+        }
+    }
+
+    private var registryCaption: String {
+        guard let saved = activity.registrySetups[setting.destination], saved.isComplete else {
+            return String(localized: "Set up how DROP publishes this.")
+        }
+        if !saved.writesFile {
+            let workflow = saved.workflowName ?? ""
+            return String(localized: "DROP starts \(workflow) on each tag.")
+        }
+        switch saved.writeMode {
+        case .pullRequest:
+            return String(localized: "DROP updates \(saved.path) in \(saved.repository) through a pull request.")
+        case .directCommit:
+            return String(localized: "DROP commits \(saved.path) to \(saved.repository).")
         }
     }
 }
@@ -101,5 +128,21 @@ struct TakeoverConfirmation: ViewModifier {
 
     private static func warning(owner: String) -> String {
         String(localized: "\(owner) already does this. If DROP does it too, they will overwrite each other.")
+    }
+}
+
+/// The sheets and dialogs of the Destinations section.
+struct DestinationSheets: ViewModifier {
+    @Bindable var activity: ProjectActivityModel
+
+    func body(content: Content) -> some View {
+        content
+            .modifier(TakeoverConfirmation(activity: activity))
+            .sheet(item: $activity.editingRegistry) { setup in
+                RegistrySetupSheet(activity: activity, setup: setup)
+            }
+            .sheet(item: $activity.registryPreview) { edit in
+                RegistryPreviewSheet(edit: edit)
+            }
     }
 }

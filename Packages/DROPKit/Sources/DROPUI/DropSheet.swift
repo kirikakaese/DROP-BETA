@@ -84,6 +84,11 @@ struct DropSheet: View {
                 if let url = result.changelogPullRequest?.htmlURL {
                     Link("View Changelog Pull Request", destination: url)
                 }
+                ForEach(Array(result.registryPullRequests.enumerated()), id: \.offset) { _, pullRequest in
+                    if let url = pullRequest.htmlURL {
+                        Link(String(localized: "View Pull Request #\(pullRequest.number)"), destination: url)
+                    }
+                }
                 Spacer()
                 Button("Done", action: onClose)
                     .keyboardShortcut(.defaultAction)
@@ -132,6 +137,10 @@ struct DropFormView: View {
                 }
                 Toggle(DropWording.betaTitle, isOn: $model.isPrerelease)
                     .help("Marks the GitHub Release as a prerelease.")
+                if let notice = model.registryNotice {
+                    Label(notice, systemImage: "info.circle")
+                        .foregroundStyle(.secondary)
+                }
                 if model.releaseAutomation == nil {
                     Toggle("Save as Draft", isOn: $model.isDraft)
                         .help("Only you can see a draft. GitHub creates the tag when you publish it.")

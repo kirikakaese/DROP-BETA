@@ -18,6 +18,8 @@ enum ScreenshotScenario: String, CaseIterable {
     case run
     case runWorkflow = "run-workflow"
     case releaseWorkflow = "release-workflow"
+    case registrySetup = "registry-setup"
+    case registryDryRun = "registry-dry-run"
     case settingsGeneral = "settings-general"
     case settingsAccount = "settings-account"
 
@@ -56,6 +58,21 @@ enum ScreenshotScenario: String, CaseIterable {
             await prepareActions(projects)
         case .dropForm, .readyToDrop, .dropped:
             await prepareDrop(projects)
+        case .registrySetup, .registryDryRun:
+            await prepareRegistry(projects)
+        }
+    }
+
+    /// The Scoop bucket DROP manages in the demo: its setup, or a dry run for the latest release.
+    @MainActor
+    private func prepareRegistry(_ projects: ProjectsModel) async {
+        guard let project = projects.selectedProject else { return }
+        let activity = projects.activityModel(for: project)
+        await activity.load(branch: "main")
+        if self == .registrySetup {
+            activity.editSetup(for: .scoopBucket)
+        } else {
+            await activity.preview(.scoopBucket)
         }
     }
 

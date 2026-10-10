@@ -24,6 +24,7 @@ extension ServiceContainer {
         for record in demoHistory(for: smp, now: now) {
             try? metadata.saveDropRecord(record)
         }
+        demoRegistries(metadata, for: smp)
 
         let secrets = InMemorySecretStore()
         let token: OAuthToken? = switch account {
@@ -48,6 +49,7 @@ extension ServiceContainer {
                 ),
                 GitHubRepository(id: 1002, fullName: "kirikakaese/EVAC-BETA", pushedAt: now - 3 * day),
                 GitHubRepository(id: 1003, fullName: "kirikakaese/DIAL-BETA", isPrivate: true, pushedAt: now - 5 * day),
+                GitHubRepository(id: 1004, fullName: "kirikakaese/scoop-bucket", pushedAt: now - 4 * day),
             ]
         )
         return ServiceContainer(
@@ -61,6 +63,19 @@ extension ServiceContainer {
         )
     }
 
+    /// DROP publishes SMP's Scoop manifest; release.yml keeps the Homebrew tap.
+    private static func demoRegistries(_ metadata: any MetadataStoring, for project: Project) {
+        let setting = DestinationSetting(destination: .scoopBucket, mode: .managed)
+        try? metadata.saveDestinationSetting(setting, projectID: project.id)
+        let setup = RegistrySetup(
+            destination: .scoopBucket,
+            repository: "kirikakaese/scoop-bucket",
+            path: "bucket/smp.json",
+            assetPattern: "SMP-*.zip"
+        )
+        try? metadata.saveRegistrySetup(setup, projectID: project.id)
+    }
+
     private static func slug(_ text: String) -> RepositorySlug {
         guard let slug = RepositorySlug(parsing: text) else { preconditionFailure("Invalid demo slug \(text)") }
         return slug
@@ -69,10 +84,11 @@ extension ServiceContainer {
     private static func demoReleases(now: Date) -> [GitHubRelease] {
         let day: TimeInterval = 86_400
         func assets(_ version: String, from id: Int64) -> [GitHubAsset] {
-            [
-                GitHubAsset(id: id, name: "SMP-\(version).dmg", size: 8_412_331),
-                GitHubAsset(id: id + 1, name: "SMP-\(version).zip", size: 7_903_112),
-                GitHubAsset(id: id + 2, name: "SHA256SUMS.txt", size: 168),
+            func digest(_ name: String) -> String { "sha256:" + Checksums.sha256(of: Data(name.utf8)) }
+            return [
+                GitHubAsset(id: id, name: "SMP-\(version).dmg", size: 8_412_331, digest: digest("dmg\(version)")),
+                GitHubAsset(id: id + 1, name: "SMP-\(version).zip", size: 7_903_112, digest: digest("zip\(version)")),
+                GitHubAsset(id: id + 2, name: "SHA256SUMS.txt", size: 168, digest: digest("sums\(version)")),
             ]
         }
         return [
@@ -127,6 +143,19 @@ extension ServiceContainer {
                           - run: git clone https://github.com/kirikakaese/homebrew-tap.git tap
                     """,
                 ".github/workflows/strings.yml": "on:\n  workflow_dispatch:\n  pull_request:\n",
+                // The Scoop bucket's manifest (the demo keeps every repository's files together).
+                "bucket/smp.json": """
+                    {
+                        "version": "0.9.2",
+                        "description": "SSH Management Platform",
+                        "homepage": "https://github.com/kirikakaese/SMP",
+                        "license": "GPL-3.0-only",
+                        "url": "https://github.com/kirikakaese/SMP/releases/download/v0.9.2/SMP-0.9.2.zip",
+                        "hash": "\(Checksums.sha256(of: Data("zip0.9.2".utf8)))",
+                        "bin": "smp.exe"
+                    }
+
+                    """,
             ]
         )
     }

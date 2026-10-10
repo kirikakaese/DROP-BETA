@@ -1,5 +1,6 @@
 import DROPCore
 import DROPGitHub
+import DROPRegistries
 import DROPServices
 import Foundation
 import Observation
@@ -19,11 +20,23 @@ public final class ProjectActivityModel {
     /// Switching an External destination to Managed waits here for a confirmation naming the
     /// automation that owns it.
     public var pendingTakeover: DestinationSetting?
+    /// How DROP publishes each registry it manages, as saved.
+    public private(set) var registrySetups: [Destination: RegistrySetup] = [:]
+    /// The registry whose setup sheet is open.
+    public var editingRegistry: RegistrySetup?
+    /// A dry run: what DROP would write to a tap or bucket for the latest release.
+    public var registryPreview: RegistryEdit?
+    public private(set) var isPreviewing = false
+    /// The pull request that adds a GHCR or npm publish workflow, once opened.
+    public private(set) var proposedPublishWorkflow: GitHubPullRequest?
+    /// Set when adding a workflow file needs signing in again with the `workflow` scope.
+    public private(set) var needsWorkflowScope = false
     public private(set) var isLoading = false
     public var error: DROPError?
 
     private let services: ServiceContainer
     private let account: AccountModel
+    private var branch = "main"
 
     init(project: Project, services: ServiceContainer, account: AccountModel) {
         self.project = project
@@ -37,6 +50,7 @@ public final class ProjectActivityModel {
     }
 
     public func load(branch: String) async {
+        self.branch = branch
         loadLocal()
         guard account.isSignedIn else { return }
         isLoading = true
@@ -53,6 +67,10 @@ public final class ProjectActivityModel {
     public func loadLocal() {
         history = (try? services.metadata.dropRecords(projectID: project.id)) ?? []
         auditLog = (try? services.metadata.auditEntries(projectID: project.id, limit: 50)) ?? []
+        registrySetups = Dictionary(
+            services.registries.setups(for: project).map { ($0.destination, $0) },
+            uniquingKeysWith: { _, last in last }
+        )
     }
 
     /// Edits a GitHub Release's title, notes and flags.
@@ -105,6 +123,74 @@ public final class ProjectActivityModel {
         guard let setting = pendingTakeover else { return }
         pendingTakeover = nil
         apply(setting)
+    }
+
+    /// The saved setup for a registry, or a suggestion to start from.
+    public func setup(for destination: Destination) -> RegistrySetup {
+        registrySetups[destination] ?? .suggested(for: destination, slug: project.slug)
+    }
+
+    /// The workflows DROP can start on a tag, for GHCR and npm.
+    public var dispatchableWorkflows: [WorkflowSummary] {
+        automation?.workflows.filter(\.triggers.dispatch) ?? []
+    }
+
+    public func editSetup(for destination: Destination) {
+        proposedPublishWorkflow = nil
+        needsWorkflowScope = false
+        editingRegistry = setup(for: destination)
+    }
+
+    public func saveSetup(_ setup: RegistrySetup) {
+        do {
+            try services.registries.save(setup, for: project)
+            registrySetups[setup.destination] = setup
+            editingRegistry = nil
+            log(String(localized: "Saved how DROP publishes to \(setup.destination.title)"), succeeded: true)
+        } catch {
+            self.error = .wrapping(error)
+        }
+    }
+
+    /// A dry run for the latest release: computes the change to the tap or bucket file and writes
+    /// nothing.
+    public func preview(_ destination: Destination) async {
+        guard let release = latest else {
+            error = DROPError(.notFound, whatHappened: String(localized: "There is no release to try this with yet."))
+            return
+        }
+        isPreviewing = true
+        defer { isPreviewing = false }
+        do {
+            registryPreview = try await services.registries.edit(
+                setup(for: destination), project: project.slug, release: release
+            )
+        } catch {
+            self.error = account.filter(error)
+        }
+    }
+
+    /// Opens a pull request that adds the GHCR or npm publish workflow. Asks to sign in again first
+    /// when the account doesn't have the `workflow` scope.
+    public func proposePublishWorkflow(for destination: Destination) async {
+        guard await account.canChangeWorkflows() else {
+            needsWorkflowScope = true
+            return
+        }
+        needsWorkflowScope = false
+        do {
+            proposedPublishWorkflow = try await services.workflows.proposePublishWorkflow(
+                for: destination, project.slug, base: branch
+            )
+            let message = String(localized: "Opened a pull request that adds a workflow for \(destination.title)")
+            log(message, succeeded: true)
+        } catch {
+            self.error = account.filter(error)
+        }
+    }
+
+    public func grantWorkflowScope() {
+        account.signIn(scopes: OAuthConfiguration.workflowScopes)
     }
 
     private func apply(_ setting: DestinationSetting) {
