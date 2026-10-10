@@ -18,7 +18,9 @@ jobs:
     name: Build and publish
     runs-on: macos-15
     env:
-      GH_TOKEN: ${{ github.token }}
+      # Publishing with your own token makes you the release's author; without it, the release is
+      # published as github-actions[bot]. See RELEASING.md, "Publish releases under your name".
+      GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
       SPARKLE_PUBLIC_KEY: ${{ vars.SPARKLE_PUBLIC_KEY }}
       DROP_OAUTH_CLIENT_ID: ${{ vars.DROP_OAUTH_CLIENT_ID }}
     steps:
@@ -51,8 +53,12 @@ jobs:
       - name: Check the setup
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           missing=0
+          if [ -z "$RELEASE_TOKEN" ]; then
+            echo "::notice::RELEASE_TOKEN is not set, so github-actions[bot] publishes the release (see RELEASING.md)."
+          fi
           if [ -z "$DROP_OAUTH_CLIENT_ID" ]; then
             echo "::error::Set the repository variable DROP_OAUTH_CLIENT_ID (see SETUP.md)."
             missing=1

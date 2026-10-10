@@ -13,6 +13,7 @@ Each step ends with a **✅ Done when** line, so you know you can move on.
 - [Before you start](#before-you-start)
 - [Part A: Create the update signing key (once)](#part-a-create-the-update-signing-key-once)
 - [Part B: Set up the Homebrew tap (once, optional)](#part-b-set-up-the-homebrew-tap-once-optional)
+- [Publish releases under your name (once, optional)](#publish-releases-under-your-name-once-optional)
 - [Part C: Publish a release (every time)](#part-c-publish-a-release-every-time)
 - [Beta releases](#beta-releases)
 - [If something goes wrong](#if-something-goes-wrong)
@@ -206,6 +207,42 @@ lists both `SPARKLE_PRIVATE_KEY` and `TAP_TOKEN`.
 
 ---
 
+## Publish releases under your name (once, optional)
+
+**Why:** by default, the release workflow publishes with GitHub's built-in token, so GitHub shows
+**github-actions[bot]** as the release's author. With a token of yours, it shows `kirikakaese`
+instead. Releases that were already published keep their author.
+
+### Step R1: Create a token for releases
+
+1. Open **[Settings → Developer settings → Fine-grained tokens → Generate new token](https://github.com/settings/personal-access-tokens/new)**.
+2. Fill in the form:
+
+   | Field | Value |
+   | --- | --- |
+   | Token name | `DROP release: publish` (any name works) |
+   | Resource owner | `kirikakaese` |
+   | Expiration | as long as you like, for example 366 days |
+   | Repository access | **Only select repositories** → `kirikakaese/DROP-BETA` |
+   | Permissions | **Contents → Read and write**. Leave everything else as it is. |
+
+3. Click **Generate token** and copy it. It starts with `github_pat_`, and GitHub shows it **only
+   once**.
+
+✅ **Done when** the token is on your clipboard.
+
+### Step R2: Add the token as a secret
+
+1. Open **[DROP → New repository secret](https://github.com/kirikakaese/DROP-BETA/settings/secrets/actions/new)**.
+2. **Name:** `RELEASE_TOKEN`
+3. **Secret:** paste with ⌘V, then click **Add secret**.
+4. Clear the clipboard: `pbcopy < /dev/null`
+
+✅ **Done when** [the Secrets tab](https://github.com/kirikakaese/DROP-BETA/settings/secrets/actions)
+lists `RELEASE_TOKEN`. The next release shows you as its author.
+
+---
+
 ## Part C: Publish a release (every time)
 
 ### Step C1: Update your local `main`
@@ -329,6 +366,9 @@ Click the red step in the workflow run to read its error. The most common ones:
 | **Verify the app** says something `is not ad-hoc signed`, or **Launch the app** says `DROP quit within 15 seconds` | The bundle's signatures don't fit together, so macOS would refuse to start DROP | Nothing to change in the settings: the code needs a fix. Delete the tag (below) and report the error |
 | **Sign the update** fails | The secret isn't the exported private key | Repeat Step A4 (it overwrites the secret), then **Re-run jobs** |
 | `TAP_TOKEN is not set` (a notice, not an error) | Part B is skipped | Nothing, or do Part B before the next release |
+| `RELEASE_TOKEN is not set` (a notice, not an error) | The release is published as github-actions[bot] | Nothing, or do [Publish releases under your name](#publish-releases-under-your-name-once-optional) |
+| **Publish the release** fails with `HTTP 403` or `Resource not accessible by personal access token` | `RELEASE_TOKEN` can't write to this repository: **Repository access** doesn't include `DROP-BETA`, or **Contents** isn't *Read and write* | Edit the token as in Step R1 and fix both settings, then **Re-run jobs** |
+| **Publish the release** fails with `HTTP 401` or `Bad credentials` | `RELEASE_TOKEN` expired or was deleted | Make a new token (Step R1), replace `RELEASE_TOKEN` (Step R2), then **Re-run jobs** |
 | **Update the Homebrew tap** fails with `Permission to kirikakaese/homebrew-tap.git denied` or `403` | The token can read the tap but not write to it: **Repository access** isn't *Only select repositories → homebrew-tap*, or **Contents** isn't *Read and write* | On [your fine-grained tokens](https://github.com/settings/personal-access-tokens), click the token, then **Edit**. Fix both settings as in Step B2 and click **Update**. The token itself stays the same, so `TAP_TOKEN` needn't change. Then **Re-run jobs** |
 | **Update the Homebrew tap** fails with `Authentication failed` | The token expired or was deleted | Make a new token (Step B2), replace `TAP_TOKEN` (Step B3), then **Re-run jobs** |
 
@@ -362,8 +402,7 @@ fixing, first delete the release and the tag:
 - **If the private key leaks,** someone could sign fake updates. Plan a key rotation right away:
   Sparkle supports moving to a new key
   (see "rotating keys" in [Sparkle's documentation](https://sparkle-project.org/documentation/)).
-- **When the token expires,** GitHub emails you beforehand. Create a new one (Step B2) and replace
-  the `TAP_TOKEN` secret (Step B3). Opening the existing secret and clicking **Update secret** works
-  too.
-- **Never** put either key or the token into a file in the repository, an issue, a pull request or
-  a chat.
+- **When a token expires,** GitHub emails you beforehand. Create a new one (Step B2 or R1) and replace
+  the `TAP_TOKEN` or `RELEASE_TOKEN` secret (Step B3 or R2). Opening the existing secret and clicking
+  **Update secret** works too.
+- **Never** put a key or a token into a file in the repository, an issue, a pull request or a chat.
