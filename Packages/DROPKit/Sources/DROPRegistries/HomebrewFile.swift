@@ -75,7 +75,8 @@ public enum HomebrewFile {
         description: String?
     ) -> String {
         let token = ((setup.path as NSString).lastPathComponent as NSString).deletingPathExtension
-        let app = setup.appName.trimmingCharacters(in: .whitespaces)
+        var app = setup.appName.trimmingCharacters(in: .whitespaces)
+        if app.isEmpty { app = "\(project.name).app" }
         var lines = [
             "cask \(quoted(token)) do",
             "  version \(quoted(version))",
@@ -85,13 +86,14 @@ public enum HomebrewFile {
             "  name \(quoted(project.name))",
         ]
         if let description = description?.trimmingCharacters(in: .whitespacesAndNewlines), !description.isEmpty {
-            let sentence = description.hasSuffix(".") ? String(description.dropLast()) : description
+            var sentence = description
+            if sentence.hasSuffix(".") { sentence.removeLast() }
             lines.append("  desc \(quoted(sentence))")
         }
         lines += [
             "  homepage \(quoted("https://github.com/\(project)"))",
             "",
-            "  app \(quoted(app.isEmpty ? "\(project.name).app" : app))",
+            "  app \(quoted(app))",
             "end",
             "",
         ]
@@ -106,8 +108,11 @@ public enum HomebrewFile {
             throw unsupported(String(localized: "Its URL isn't a plain string."))
         }
         let current = line[line.index(after: open)..<close]
-        if kind == .cask, current.contains("#{version}") { return line }
-        let value = kind == .cask ? interpolated(url: url, version: version) : url
+        var value = url
+        if kind == .cask {
+            if current.contains("#{version}") { return line }
+            value = interpolated(url: url, version: version)
+        }
         return String(line[..<open]) + quoted(value) + String(line[line.index(after: close)...])
     }
 
