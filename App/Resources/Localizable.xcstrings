@@ -261,6 +261,36 @@
         }
       }
     },
+    "%lld minutes idle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Minuten inaktiv"
+          }
+        }
+      }
+    },
+    "1 hour idle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Stunde inaktiv"
+          }
+        }
+      }
+    },
+    "1 minute idle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Minute inaktiv"
+          }
+        }
+      }
+    },
     "About %@": {
       "localizations": {
         "de": {
@@ -451,6 +481,16 @@
         }
       }
     },
+    "App Lock": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App-Sperre"
+          }
+        }
+      }
+    },
     "Archived": {
       "localizations": {
         "de": {
@@ -527,6 +567,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Angehängt"
+          }
+        }
+      }
+    },
+    "Authentication failed.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authentifizierung fehlgeschlagen."
+          }
+        }
+      }
+    },
+    "Authentication was cancelled or failed, so nothing was changed.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Authentifizierung wurde abgebrochen oder ist fehlgeschlagen, daher wurde nichts geändert."
           }
         }
       }
@@ -841,6 +901,16 @@
         }
       }
     },
+    "DROP also locks when your screen locks or the Mac goes to sleep. A drop that is already running keeps running while DROP is locked.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP sperrt sich auch, wenn dein Bildschirm gesperrt wird oder der Mac in den Ruhezustand wechselt. Ein Drop, der bereits läuft, läuft weiter, während DROP gesperrt ist."
+          }
+        }
+      }
+    },
     "DROP asks for workflow access only when you let it add a release workflow to a repository.": {
       "localizations": {
         "de": {
@@ -887,6 +957,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "DROP committet %1$@ in %2$@."
+          }
+        }
+      }
+    },
+    "DROP could not ask for Touch ID or your password.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP konnte nicht nach Touch ID oder deinem Passwort fragen."
           }
         }
       }
@@ -951,6 +1031,16 @@
         }
       }
     },
+    "DROP is locked": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP ist gesperrt"
+          }
+        }
+      }
+    },
     "DROP is using a temporary list for now, so projects you add are not kept. Quit and reopen DROP to try again.": {
       "localizations": {
         "de": {
@@ -1007,6 +1097,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "DROP startet ihn auf dem Tag, sobald das GitHub Release existiert. DROP hält nie ein Registry-Token."
+          }
+        }
+      }
+    },
+    "DROP stays locked until you confirm with Touch ID or your password.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP bleibt gesperrt, bis du mit Touch ID oder deinem Passwort bestätigst."
           }
         }
       }
@@ -1751,12 +1851,62 @@
         }
       }
     },
+    "Lock %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ sperren"
+          }
+        }
+      }
+    },
+    "Lock DROP with Touch ID or password": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP mit Touch ID oder Passwort sperren"
+          }
+        }
+      }
+    },
+    "Lock Now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt sperren"
+          }
+        }
+      }
+    },
+    "Lock after": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sperren nach"
+          }
+        }
+      }
+    },
     "Major": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Major"
+          }
+        }
+      }
+    },
+    "Make sure your Mac has a login password set.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle sicher, dass für deinen Mac ein Anmeldepasswort festgelegt ist."
           }
         }
       }
@@ -1987,6 +2137,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aus"
+          }
+        }
+      }
+    },
+    "Only at launch and screen lock": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur beim Start und bei Bildschirmsperre"
           }
         }
       }
@@ -2801,6 +2961,16 @@
         }
       }
     },
+    "The app lock needs a login password on this Mac.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die App-Sperre benötigt auf diesem Mac ein Anmeldepasswort."
+          }
+        }
+      }
+    },
     "The cask has no version.": {
       "localizations": {
         "de": {
@@ -2967,6 +3137,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Zwei Assets heißen „%@“."
+          }
+        }
+      }
+    },
+    "Unlock with Touch ID or Password": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit Touch ID oder Passwort entsperren"
           }
         }
       }
@@ -3227,6 +3407,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Deine GitHub-Sitzung ist abgelaufen. Melde dich erneut an, um DROP weiter mit GitHub zu verwenden."
+          }
+        }
+      }
+    },
+    "Your projects and drops are hidden until you confirm it's you.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Projekte und Drops sind verborgen, bis du bestätigst, dass du es bist."
           }
         }
       }

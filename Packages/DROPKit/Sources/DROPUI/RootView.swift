@@ -6,13 +6,36 @@ import SwiftUI
 public struct RootView: View {
     @Bindable private var model: ProjectsModel
     @Bindable private var account: AccountModel
+    @Bindable private var appLock: AppLockModel
 
-    public init(model: ProjectsModel) {
+    public init(model: ProjectsModel, appLock: AppLockModel) {
         self.model = model
+        self.appLock = appLock
         account = model.account
     }
 
     public var body: some View {
+        Group {
+            // While locked, the workspace (and every sheet it presents) is removed entirely.
+            if appLock.isLocked {
+                LockView(model: appLock)
+            } else {
+                workspace
+            }
+        }
+        .task {
+            model.load()
+            await account.load()
+            await model.refreshFromGitHub()
+        }
+        .onChange(of: account.isSignedIn) { _, isSignedIn in
+            if isSignedIn { Task { await model.refreshFromGitHub() } }
+        }
+        .errorAlert($model.error)
+        .errorAlert($account.error)
+    }
+
+    private var workspace: some View {
         NavigationSplitView {
             SidebarView(model: model)
                 .navigationSplitViewColumnWidth(min: 200, ideal: 240)
@@ -45,14 +68,6 @@ public struct RootView: View {
                 .disabled(!model.canDrop)
             }
         }
-        .task {
-            model.load()
-            await account.load()
-            await model.refreshFromGitHub()
-        }
-        .onChange(of: account.isSignedIn) { _, isSignedIn in
-            if isSignedIn { Task { await model.refreshFromGitHub() } }
-        }
         .sheet(isPresented: $model.isAddingProject) {
             AddProjectSheet(model: model)
         }
@@ -66,21 +81,20 @@ public struct RootView: View {
                 SignInSheet(account: account, authorization: authorization)
             }
         }
-        .errorAlert($model.error)
-        .errorAlert($account.error)
     }
 
     private var dropSheetBinding: Binding<Bool> {
         Binding(
             get: { model.currentDrop != nil },
-            set: { if !$0, model.currentDrop?.isRunning != true { model.currentDrop = nil } }
+            // Locking hides the sheet without closing the drop; it comes back after unlocking.
+            set: { if !$0, !appLock.isLocked, model.currentDrop?.isRunning != true { model.currentDrop = nil } }
         )
     }
 
     private var signInSheetBinding: Binding<Bool> {
         Binding(
             get: { account.pendingAuthorization != nil },
-            set: { if !$0 { account.cancelSignIn() } }
+            set: { if !$0, !appLock.isLocked { account.cancelSignIn() } }
         )
     }
 }

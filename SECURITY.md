@@ -48,6 +48,7 @@ Until 1.0, only the latest release receives security fixes.
 | Token sent to GitHub's storage | Logs and artifacts redirect to GitHub's storage; DROP follows those links without the token, over HTTPS only. |
 | Crafted artifact archives | Artifacts are unpacked with `ditto` into a fresh temporary folder; links are removed and only regular files inside that folder are used. |
 | Broader access than needed | The `workflow` scope is requested only when you let DROP add a workflow file, through a new sign-in that names it. |
+| Someone at your unlocked Mac seeing your projects | The app lock hides the window behind Touch ID or the login password at launch, after the chosen idle time, on screen lock and on sleep. It only hides the window: a drop that is already running finishes. |
 | Malicious API responses or repository contents | All external input is size-capped and decoded into typed models; commit messages and workflow files are parsed, never executed. |
 
 ### Out of scope
