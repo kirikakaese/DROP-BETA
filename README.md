@@ -8,11 +8,11 @@ DROP watches and verifies instead of doing it twice.
 
 > **Status:** early development (0.1). Signing in with GitHub, adding projects, dropping GitHub
 > Releases with assets and checksums, changelogs with version suggestions, GitHub Actions (runs,
-> logs, artifacts), detecting existing release automation and publishing to Homebrew, Scoop, GHCR
-> and npm work; signed releases with self-update are being built. Please
+> logs, artifacts), detecting existing release automation, publishing to Homebrew, Scoop, GHCR
+> and npm, and self-updating releases work. Please
 > [open an issue](https://github.com/kirikakaese/DROP-BETA/issues) if something looks wrong.
 
-## Features (planned)
+## Features
 
 - **Drop a version:** create the tag and the GitHub Release, as a draft or a prerelease ("Drop a
   Beta"), upload assets with `SHA256SUMS.txt`, and verify the checksums after uploading.
@@ -34,10 +34,26 @@ DROP watches and verifies instead of doing it twice.
 - **Sign in with GitHub:** device flow, tokens only in the Keychain, refreshed before they
   expire.
 - **History:** every drop and every step is kept per project, without secrets.
+- **Updates itself:** DROP checks its GitHub Releases daily and installs an update only if it is
+  signed with DROP's release key. Betas are offered only if you opt in.
 
 ## Requirements
 
 - macOS 14 Sonoma or later, Apple Silicon or Intel.
+
+## Installing
+
+Download `DROP-<version>.dmg` from the
+[latest release](https://github.com/kirikakaese/DROP-BETA/releases/latest) and drag DROP to
+Applications, or use Homebrew:
+
+```sh
+brew install --cask kirikakaese/tap/drop
+```
+
+DROP is not notarized by Apple. The first time you open it, macOS blocks it: open
+**System Settings → Privacy & Security** and click **Open Anyway**. Compare the download with
+`SHA256SUMS.txt` on the release page (Homebrew does this for you). After that, DROP updates itself.
 
 ## Building from source
 
@@ -46,8 +62,9 @@ DROP watches and verifies instead of doing it twice.
    (and optionally your Team ID). [SETUP.md](SETUP.md) walks you through it.
 3. Run `xcodegen generate` and open `DROP.xcodeproj`.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for tests and linting, and
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the code is organized.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for tests and linting,
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the code is organized, and
+[RELEASING.md](RELEASING.md) for how a release is published.
 
 ## Security
 

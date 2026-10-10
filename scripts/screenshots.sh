@@ -48,3 +48,4 @@ capture 14-projects-de projects all -AppleLanguages "(de)" -AppleLocale de_DE
 capture 15-drop-form-de drop-form all -AppleLanguages "(de)" -AppleLocale de_DE
 capture 16-registry-setup registry-setup all
 capture 17-registry-dry-run registry-dry-run all
+capture 18-settings-updates settings-updates front

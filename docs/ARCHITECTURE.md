@@ -13,7 +13,9 @@ Swift package `Packages/DROPKit`, split into modules with one job each:
 | `DROPUI` | SwiftUI views and their `@Observable` models. Talks to services through protocols only. | Core, GitHub, Registries, Services |
 | `DROPTestFixtures` | Sample data for the tests. Never ships in the app. | Core |
 
-The app target (`App/Sources`) creates the live `ServiceContainer`, the models and the scenes.
+The app target (`App/Sources`) creates the live `ServiceContainer`, the models and the scenes, and
+owns the updater: [Sparkle](https://sparkle-project.org) is linked only by the app, which hands
+DROPUI's Settings window its Updates tab.
 
 ## Rules
 
@@ -50,3 +52,10 @@ The app target (`App/Sources`) creates the live `ServiceContainer`, the models a
   DROP starts on the tag (`WorkflowTemplate.ghcr` and `.npm` can be added through a pull request);
   it signs in with the workflow's own `GITHUB_TOKEN` or npm's trusted publishing, so DROP never
   holds a registry token. **Try It** runs the same code as a drop without the write.
+- **Releases come from a tag.** Pushing `v1.2.3` runs `.github/workflows/release.yml`: it builds the
+  universal app ad-hoc signed, checks it (architectures, update key, Client ID, feed URL) and that it
+  launches, packages `DROP-<version>.dmg` and `.zip`, signs the zip with the Sparkle EdDSA key,
+  extends `appcast.xml` (`scripts/appcast.py`) and publishes the GitHub Release. For stable versions
+  it writes `Casks/drop.rb` in the tap from `scripts/drop.rb.template` and nothing else. Builds
+  without `SPARKLE_PUBLIC_KEY` (everything but releases) never check for updates.
+  [RELEASING.md](../RELEASING.md) has the one-time setup and the steps.

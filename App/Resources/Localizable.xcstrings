@@ -481,12 +481,52 @@
         }
       }
     },
+    "Check": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suchen"
+          }
+        }
+      }
+    },
     "Check %@ on %@": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ in %2$@ prüfen"
+          }
+        }
+      }
+    },
+    "Check Now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt suchen"
+          }
+        }
+      }
+    },
+    "Check for Updates…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach Updates suchen …"
+          }
+        }
+      }
+    },
+    "Check for updates automatically": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatisch nach Updates suchen"
           }
         }
       }
@@ -841,6 +881,16 @@
         }
       }
     },
+    "Daily": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Täglich"
+          }
+        }
+      }
+    },
     "Default Branch": {
       "localizations": {
         "de": {
@@ -967,6 +1017,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fertig"
+          }
+        }
+      }
+    },
+    "Download and install updates automatically": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updates automatisch laden und installieren"
           }
         }
       }
@@ -1371,6 +1431,16 @@
         }
       }
     },
+    "Include beta versions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Betaversionen einbeziehen"
+          }
+        }
+      }
+    },
     "It downloads several files.": {
       "localizations": {
         "de": {
@@ -1457,6 +1527,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Letztes Release"
+          }
+        }
+      }
+    },
+    "Last checked": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zuletzt gesucht"
           }
         }
       }
@@ -1561,12 +1641,32 @@
         }
       }
     },
+    "Monthly": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatlich"
+          }
+        }
+      }
+    },
     "More than one asset matches “%@”.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Mehr als ein Asset passt zu „%@“."
+          }
+        }
+      }
+    },
+    "Never": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie"
           }
         }
       }
@@ -2521,6 +2621,16 @@
         }
       }
     },
+    "This build of DROP wasn't made by the release workflow, so it doesn't update itself.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Build von DROP stammt nicht aus dem Release-Workflow und aktualisiert sich deshalb nicht selbst."
+          }
+        }
+      }
+    },
     "This registry isn't set up yet.": {
       "localizations": {
         "de": {
@@ -2627,6 +2737,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vorhandenes GitHub Release %@ aktualisieren"
+          }
+        }
+      }
+    },
+    "Updates": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updates"
+          }
+        }
+      }
+    },
+    "Updates come from DROP's GitHub Releases and are installed only if they are signed with DROP's release key. An update installed automatically takes effect the next time DROP quits.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updates kommen aus den GitHub Releases von DROP und werden nur installiert, wenn sie mit dem Release-Schlüssel von DROP signiert sind. Ein automatisch installiertes Update wird wirksam, wenn DROP das nächste Mal beendet wird."
           }
         }
       }
@@ -2747,6 +2877,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Warte darauf, dass du DROP auf GitHub bestätigst …"
+          }
+        }
+      }
+    },
+    "Weekly": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wöchentlich"
           }
         }
       }

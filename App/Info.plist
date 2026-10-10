@@ -37,5 +37,15 @@
 	<string>$(DROP_REPO_SLUG)</string>
 	<key>DROPOAuthClientID</key>
 	<string>$(DROP_OAUTH_CLIENT_ID)</string>
+	<key>SUFeedURL</key>
+	<string>https://github.com/$(DROP_REPO_SLUG)/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>$(SPARKLE_PUBLIC_KEY)</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
+	<key>SUAutomaticallyUpdate</key>
+	<false/>
 </dict>
 </plist>

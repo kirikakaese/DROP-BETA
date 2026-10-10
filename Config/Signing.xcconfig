@@ -6,9 +6,12 @@
 // DROP_OAUTH_CLIENT_ID: the Client ID of DROP's GitHub OAuth App (public, not a secret). Without
 // it, the app runs but can't sign in. CI and release builds get it from the repository variable
 // of the same name; see SETUP.md.
+// SPARKLE_PUBLIC_KEY: the public half of DROP's update signing key. Only the release workflow sets
+// it; builds without it never check for updates. See RELEASING.md.
 
 DEVELOPMENT_TEAM =
 DROP_OAUTH_CLIENT_ID =
+SPARKLE_PUBLIC_KEY =
 
 #include "Repo.xcconfig"
 #include? "Local.xcconfig"
