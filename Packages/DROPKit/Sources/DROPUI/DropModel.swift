@@ -147,11 +147,16 @@ public final class DropModel {
     public var suggestionSummary: String? {
         guard let changes else { return nil }
         let since = changes.since.map { String(localized: "Since \($0)") } ?? String(localized: "No release yet")
-        let counts = String(localized: """
-            \(changes.breakingCount) breaking, \(changes.count(ofType: "feat")) features, \
-            \(changes.count(ofType: "fix")) fixes
-            """)
-        return "\(since): \(counts)"
+        let breaking = changes.breakingCount
+        let features = changes.count(ofType: "feat")
+        let fixes = changes.count(ofType: "fix")
+        // Separate strings, so each count gets its own singular and plural in the String Catalog.
+        let counts = [
+            String(localized: "\(breaking) breaking"),
+            String(localized: "\(features) features"),
+            String(localized: "\(fixes) fixes"),
+        ]
+        return "\(since): \(counts.joined(separator: ", "))"
     }
 
     /// Loads who performs each destination, so the plan names the automation that owns them.
