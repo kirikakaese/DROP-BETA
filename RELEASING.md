@@ -66,27 +66,39 @@ ls /tmp/sparkle/bin
 
 ### Step A2: Create the key pair
 
+DROP gets its own key, under the account name `drop`, so it never shares a key with another app
+(like SMP). Every `generate_keys` command in this guide therefore ends with `--account drop`.
+
 ```sh
-/tmp/sparkle/bin/generate_keys
+/tmp/sparkle/bin/generate_keys --account drop
 ```
 
 - macOS may ask whether `generate_keys` may use your keychain. Enter your Mac password and click
   **Always Allow**.
 - The tool saves the private key in your **login keychain**, as an item named *"Private key for
-  signing Sparkle updates"*.
+  signing Sparkle updates"* with the account `drop`.
 - It then prints the public key, in a line like
   `<string>pfIShU4dEXqPd5ObYNfDBiQWcXozk7estwzTnF9BamQ=</string>`.
 
 If you run it again later, it does not make a new key; it prints the existing one.
 
-✅ **Done when** you see a message that a key was generated (or already exists) and a `<string>…</string>` line.
+To check that it isn't another app's key, compare it with the key under the default account (that
+one may not exist, which is fine):
+
+```sh
+/tmp/sparkle/bin/generate_keys -p
+/tmp/sparkle/bin/generate_keys --account drop -p
+```
+
+✅ **Done when** you see a message that a key was generated (or already exists), and the two
+commands above print different keys (or the first prints none).
 
 ### Step A3: Add the public key to GitHub as a variable
 
 1. Copy the public key to your clipboard:
 
    ```sh
-   /tmp/sparkle/bin/generate_keys -p | pbcopy
+   /tmp/sparkle/bin/generate_keys --account drop -p | pbcopy
    ```
 
 2. Open **[DROP → Settings → Secrets and variables → Actions → Variables → New repository variable](https://github.com/kirikakaese/DROP-BETA/settings/variables/actions/new)**.
@@ -94,7 +106,6 @@ If you run it again later, it does not make a new key; it prints the existing on
 4. **Value:** paste with ⌘V. It is about 44 characters and ends with `=`. Paste only the key, not
    `<string>` or any spaces.
 5. Click **Add variable**.
-
 
 *If the link doesn't open the form:* open **Settings → Secrets and variables → Actions**, then the
 **Variables** tab, then **New repository variable**.
@@ -104,12 +115,11 @@ lists `SPARKLE_PUBLIC_KEY` with your key as its value.
 
 ### Step A4: Add the private key to GitHub as a secret
 
-1. Export the private key to a temporary file, copy it, then delete the file right away:
+1. Export the private key to a temporary file and copy it:
 
    ```sh
-   /tmp/sparkle/bin/generate_keys -x /tmp/sparkle-private-key.txt
-   pbcopy < /tmp/sparkle-private-key.txt
-   rm /tmp/sparkle-private-key.txt
+   /tmp/sparkle/bin/generate_keys --account drop -x /tmp/drop-sparkle-key.txt
+   pbcopy < /tmp/drop-sparkle-key.txt
    ```
 
 2. Open **[DROP → Settings → Secrets and variables → Actions → New repository secret](https://github.com/kirikakaese/DROP-BETA/settings/secrets/actions/new)**
@@ -117,9 +127,12 @@ lists `SPARKLE_PUBLIC_KEY` with your key as its value.
 3. **Name:** `SPARKLE_PRIVATE_KEY`
 4. **Secret:** paste with ⌘V.
 5. Click **Add secret**.
-6. Clear the clipboard, so the key isn't pasted somewhere by accident later:
+6. Recommended: paste the same text into a new entry in your password manager, named
+   "DROP Sparkle private key". It's your backup if the keychain is ever lost.
+7. Delete the file and clear the clipboard, so the key isn't pasted somewhere by accident later:
 
    ```sh
+   rm /tmp/drop-sparkle-key.txt
    pbcopy < /dev/null
    ```
 
@@ -342,9 +355,10 @@ fixing, first delete the release and the tag:
   - Every installed copy of DROP only trusts updates signed with it.
   - If you lose it, existing users can't update automatically any more. They would have to download
     a new version by hand.
-  - It lives in your login keychain, as *"Private key for signing Sparkle updates"*, and is
-    included in your normal Mac backups (for example Time Machine).
-  - You can also keep a copy in a password manager: export it again as in Step A4.
+  - It lives in your login keychain, as *"Private key for signing Sparkle updates"* with the
+    account `drop`, and is included in your normal Mac backups (for example Time Machine).
+  - Keep a copy in a password manager too (Step A4, item 6). To export it again:
+    `/tmp/sparkle/bin/generate_keys --account drop -x /tmp/drop-sparkle-key.txt`.
 - **If the private key leaks,** someone could sign fake updates. Plan a key rotation right away:
   Sparkle supports moving to a new key
   (see "rotating keys" in [Sparkle's documentation](https://sparkle-project.org/documentation/)).
