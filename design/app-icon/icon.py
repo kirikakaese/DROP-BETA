@@ -7,7 +7,7 @@ Usage:
   python3 design/app-icon/icon.py              writes design/app-icon/drop-icon.svg
   python3 design/app-icon/icon.py ICONSET      also writes the PNGs into ICONSET (needs Pillow)
 
-The bundle's icon is regenerated with
+Rebuild the bundle's icon with
   python3 design/app-icon/icon.py App/Resources/Assets.xcassets/AppIcon.appiconset
 """
 import math
