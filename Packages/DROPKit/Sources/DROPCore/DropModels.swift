@@ -184,9 +184,11 @@ public enum DropStep: Hashable, Sendable {
         case .leaveToAutomation(let destination, _), .awaitPublishWorkflow(let destination, _, _, _):
             String(localized: "Publish to \(destination.title)")
         case .updateRegistryFile(_, let repository, let path, let viaPullRequest):
-            viaPullRequest
-                ? String(localized: "Open a pull request on \(repository) that updates \(path)")
-                : String(localized: "Commit \(path) to \(repository)")
+            if viaPullRequest {
+                String(localized: "Open a pull request on \(repository) that updates \(path)")
+            } else {
+                String(localized: "Commit \(path) to \(repository)")
+            }
         case .verifyRegistryFile(_, let repository, let path):
             String(localized: "Check \(path) on \(repository)")
         case .dispatchPublishWorkflow(let destination, let name, _, let tag):
