@@ -11,12 +11,32 @@
         }
       }
     },
+    "%@ (new)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (neu)"
+          }
+        }
+      }
+    },
     "%@ already does this. If DROP does it too, they will overwrite each other.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "%@ erledigt das bereits. Wenn DROP es auch tut, überschreiben sie sich gegenseitig."
+          }
+        }
+      }
+    },
+    "%@ already writes %@, so DROP leaves it alone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ schreibt %2$@ bereits, deshalb lässt DROP die Datei in Ruhe."
           }
         }
       }
@@ -71,6 +91,16 @@
         }
       }
     },
+    "%@ doesn't exist in %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ existiert in %2$@ nicht."
+          }
+        }
+      }
+    },
     "%@ failed (%@).": {
       "localizations": {
         "de": {
@@ -107,6 +137,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ ist jetzt %2$@"
+          }
+        }
+      }
+    },
+    "%@ isn't published by a workflow.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wird nicht von einem Workflow veröffentlicht."
+          }
+        }
+      }
+    },
+    "%@ isn't set up yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist noch nicht eingerichtet."
+          }
+        }
+      }
+    },
+    "%@ on %@ doesn't name %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ in %2$@ nennt %3$@ nicht."
           }
         }
       }
@@ -211,6 +271,16 @@
         }
       }
     },
+    "Add a Publish Workflow…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workflow zum Veröffentlichen hinzufügen …"
+          }
+        }
+      }
+    },
     "Add a Release Workflow": {
       "localizations": {
         "de": {
@@ -237,6 +307,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Füge ein Repository hinzu, um mit dem Droppen zu beginnen."
+          }
+        }
+      }
+    },
+    "Add it to the repository once; DROP keeps it up to date from then on.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge die Datei einmal zum Repository hinzu; danach hält DROP sie aktuell."
           }
         }
       }
@@ -271,6 +351,16 @@
         }
       }
     },
+    "App": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App"
+          }
+        }
+      }
+    },
     "Archived": {
       "localizations": {
         "de": {
@@ -287,6 +377,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Artefakte"
+          }
+        }
+      }
+    },
+    "Asset": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asset"
           }
         }
       }
@@ -331,6 +431,16 @@
         }
       }
     },
+    "Betas and drafts aren't published to Homebrew or Scoop.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Betas und Entwürfe werden nicht in Homebrew oder Scoop veröffentlicht."
+          }
+        }
+      }
+    },
     "Branch": {
       "localizations": {
         "de": {
@@ -371,6 +481,16 @@
         }
       }
     },
+    "Check %@ on %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ in %2$@ prüfen"
+          }
+        }
+      }
+    },
     "Check that the GitHub Release %@ exists": {
       "localizations": {
         "de": {
@@ -387,6 +507,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Prüfe, ob die Datei noch existiert, und versuche es erneut."
+          }
+        }
+      }
+    },
+    "Check the asset pattern, or attach the file to the drop.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüfe das Asset-Muster oder hänge die Datei an den Drop an."
           }
         }
       }
@@ -421,12 +551,42 @@
         }
       }
     },
+    "Choose another file, or set this destination to External.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle eine andere Datei oder stelle dieses Ziel auf „Extern“."
+          }
+        }
+      }
+    },
     "Close": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Schließen"
+          }
+        }
+      }
+    },
+    "Commit %@ to %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ in %2$@ committen"
+          }
+        }
+      }
+    },
+    "Commit Message": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commit-Nachricht"
           }
         }
       }
@@ -521,6 +681,36 @@
         }
       }
     },
+    "DROP can't update this Homebrew file. %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP kann diese Homebrew-Datei nicht aktualisieren. %@"
+          }
+        }
+      }
+    },
+    "DROP can't update this Scoop manifest. %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP kann dieses Scoop-Manifest nicht aktualisieren. %@"
+          }
+        }
+      }
+    },
+    "DROP commits %@ to %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP committet %1$@ in %2$@."
+          }
+        }
+      }
+    },
     "DROP could not open its project list.": {
       "localizations": {
         "de": {
@@ -591,12 +781,52 @@
         }
       }
     },
+    "DROP never changes a file another workflow writes. Betas and drafts are left out.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP ändert nie eine Datei, die ein anderer Workflow schreibt. Betas und Entwürfe bleiben außen vor."
+          }
+        }
+      }
+    },
     "DROP opens a pull request adding %@. Replace its build step before merging.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "DROP öffnet einen Pull Request, der %@ hinzufügt. Ersetze den Build-Schritt vor dem Mergen."
+          }
+        }
+      }
+    },
+    "DROP starts %@ on each tag.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP startet %@ bei jedem Tag."
+          }
+        }
+      }
+    },
+    "DROP starts it on the tag once the GitHub Release exists. DROP never holds a registry token.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP startet ihn auf dem Tag, sobald das GitHub Release existiert. DROP hält nie ein Registry-Token."
+          }
+        }
+      }
+    },
+    "DROP updates %@ in %@ through a pull request.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DROP aktualisiert %1$@ in %2$@ über einen Pull Request."
           }
         }
       }
@@ -721,6 +951,16 @@
         }
       }
     },
+    "Direct Commit": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Direkter Commit"
+          }
+        }
+      }
+    },
     "Done": {
       "localizations": {
         "de": {
@@ -791,6 +1031,16 @@
         }
       }
     },
+    "Drop the version again so DROP uploads the file and knows its checksum.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Droppe die Version erneut, damit DROP die Datei hochlädt und ihre Prüfsumme kennt."
+          }
+        }
+      }
+    },
     "Drop v%@": {
       "localizations": {
         "de": {
@@ -847,6 +1097,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Drop…"
+          }
+        }
+      }
+    },
+    "Dry Run": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probelauf"
           }
         }
       }
@@ -927,6 +1187,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Externe Ziele bleiben der Automatisierung überlassen, der sie gehören; DROP prüft nur das Ergebnis."
+          }
+        }
+      }
+    },
+    "File": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datei"
           }
         }
       }
@@ -1041,6 +1311,16 @@
         }
       }
     },
+    "GitHub reported no checksum for “%@”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub hat keine Prüfsumme für „%@“ gemeldet."
+          }
+        }
+      }
+    },
     "GitHub sent an answer DROP doesn't understand.": {
       "localizations": {
         "de": {
@@ -1077,6 +1357,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Homebrew-Tap"
+          }
+        }
+      }
+    },
+    "In the asset, {version} stands for the version without the v, and * for anything.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Im Asset steht {version} für die Version ohne v und * für beliebige Zeichen."
+          }
+        }
+      }
+    },
+    "It downloads several files.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es lädt mehrere Dateien herunter."
+          }
+        }
+      }
+    },
+    "It has no version.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es hat keine Version."
+          }
+        }
+      }
+    },
+    "It has one download per architecture, or no checksum.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sie hat einen Download pro Architektur oder keine Prüfsumme."
+          }
+        }
+      }
+    },
+    "It has one download per architecture, or none.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es hat einen Download pro Architektur oder gar keinen."
+          }
+        }
+      }
+    },
+    "It is neither a Homebrew cask nor a formula.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sie ist weder ein Homebrew-Cask noch eine Formula."
+          }
+        }
+      }
+    },
+    "It isn't valid JSON.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es ist kein gültiges JSON."
+          }
+        }
+      }
+    },
+    "Its URL isn't a plain string.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ihre URL ist kein einfacher String."
           }
         }
       }
@@ -1161,6 +1521,16 @@
         }
       }
     },
+    "Make the asset pattern more specific, like “App-{version}.dmg”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mach das Asset-Muster genauer, etwa „App-{version}.dmg“."
+          }
+        }
+      }
+    },
     "Managed": {
       "localizations": {
         "de": {
@@ -1187,6 +1557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Minor"
+          }
+        }
+      }
+    },
+    "More than one asset matches “%@”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mehr als ein Asset passt zu „%@“."
           }
         }
       }
@@ -1221,6 +1601,16 @@
         }
       }
     },
+    "No asset matches “%@”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Asset passt zu „%@“."
+          }
+        }
+      }
+    },
     "No release yet": {
       "localizations": {
         "de": {
@@ -1237,6 +1627,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Noch keine Läufe."
+          }
+        }
+      }
+    },
+    "No workflow yet? DROP opens a pull request that adds one. Merge it, then choose it here.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch kein Workflow? DROP öffnet einen Pull Request, der einen hinzufügt. Merge ihn und wähle ihn dann hier aus."
+          }
+        }
+      }
+    },
+    "None": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keiner"
           }
         }
       }
@@ -1267,6 +1677,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Es wurde noch nichts an GitHub gesendet."
+          }
+        }
+      }
+    },
+    "Nothing was written. DROP makes this change when you drop the next version.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es wurde nichts geschrieben. DROP nimmt diese Änderung vor, wenn du die nächste Version droppst."
           }
         }
       }
@@ -1331,6 +1751,16 @@
         }
       }
     },
+    "Open a pull request on %@ that updates %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request in %1$@ öffnen, der %2$@ aktualisiert"
+          }
+        }
+      }
+    },
     "Open on GitHub": {
       "localizations": {
         "de": {
@@ -1341,12 +1771,32 @@
         }
       }
     },
+    "Open the repository on GitHub and check the file.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne das Repository auf GitHub und prüfe die Datei."
+          }
+        }
+      }
+    },
     "Open the run on GitHub, fix it, then run it again on the tag.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Öffne den Lauf auf GitHub, behebe den Fehler und starte ihn erneut auf dem Tag."
+          }
+        }
+      }
+    },
+    "Opened a pull request that adds a workflow for %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request geöffnet, der einen Workflow für %@ hinzufügt"
           }
         }
       }
@@ -1491,6 +1941,16 @@
         }
       }
     },
+    "Pull Request": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request"
+          }
+        }
+      }
+    },
     "Ready to Drop": {
       "localizations": {
         "de": {
@@ -1631,6 +2091,16 @@
         }
       }
     },
+    "SHA-256": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-256"
+          }
+        }
+      }
+    },
     "Same as the tag": {
       "localizations": {
         "de": {
@@ -1657,6 +2127,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Als Entwurf sichern"
+          }
+        }
+      }
+    },
+    "Saved how DROP publishes to %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gesichert, wie DROP in %@ veröffentlicht"
           }
         }
       }
@@ -1691,12 +2171,52 @@
         }
       }
     },
+    "Set Up…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einrichten …"
+          }
+        }
+      }
+    },
+    "Set it up under Destinations on the project page, or turn it off.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Richte es unter „Ziele“ auf der Projektseite ein oder schalte es aus."
+          }
+        }
+      }
+    },
+    "Set up how DROP publishes this.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Richte ein, wie DROP das veröffentlicht."
+          }
+        }
+      }
+    },
     "Show Log": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Log anzeigen"
+          }
+        }
+      }
+    },
+    "Shows what DROP would write for the latest release, without writing anything.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt, was DROP für das neueste Release schreiben würde, ohne etwas zu schreiben."
           }
         }
       }
@@ -1841,6 +2361,16 @@
         }
       }
     },
+    "Start %@ on %@ to publish to %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ auf %2$@ starten, um in %3$@ zu veröffentlichen"
+          }
+        }
+      }
+    },
     "Started dropping %@": {
       "localizations": {
         "de": {
@@ -1911,6 +2441,26 @@
         }
       }
     },
+    "The app a new cask installs. DROP writes a cask when the file doesn't exist yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die App, die ein neues Cask installiert. DROP schreibt ein Cask, wenn die Datei noch nicht existiert."
+          }
+        }
+      }
+    },
+    "The cask has no version.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Cask hat keine Version."
+          }
+        }
+      }
+    },
     "The checksum of “%@” on GitHub doesn't match your file.": {
       "localizations": {
         "de": {
@@ -1941,6 +2491,16 @@
         }
       }
     },
+    "There is no release to try this with yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es gibt noch kein Release, mit dem sich das ausprobieren lässt."
+          }
+        }
+      }
+    },
     "This build has no GitHub Client ID, so it can't sign in. See SETUP.md.": {
       "localizations": {
         "de": {
@@ -1957,6 +2517,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dieser Build von DROP hat keine GitHub-Client-ID."
+          }
+        }
+      }
+    },
+    "This registry isn't set up yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Registry ist noch nicht eingerichtet."
           }
         }
       }
@@ -1987,6 +2557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Titel"
+          }
+        }
+      }
+    },
+    "Try It…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausprobieren …"
           }
         }
       }
@@ -2027,6 +2607,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Unveröffentlicht"
+          }
+        }
+      }
+    },
+    "Update it by hand, or let the automation that maintains it keep doing so.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktualisiere die Datei von Hand oder lass die Automatisierung, die sie pflegt, das weiter tun."
           }
         }
       }
@@ -2111,6 +2701,16 @@
         }
       }
     },
+    "View Pull Request #%lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pull Request #%lld ansehen"
+          }
+        }
+      }
+    },
     "View on GitHub": {
       "localizations": {
         "de": {
@@ -2151,6 +2751,16 @@
         }
       }
     },
+    "Workflow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workflow"
+          }
+        }
+      }
+    },
     "Workflows": {
       "localizations": {
         "de": {
@@ -2167,6 +2777,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schreiben"
+          }
+        }
+      }
+    },
+    "Write Using": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreiben per"
           }
         }
       }

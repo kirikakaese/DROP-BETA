@@ -46,24 +46,11 @@ public struct WorkflowService: Sendable {
     /// Opens a pull request against `base` that adds `WorkflowTemplate.release`. Refuses if the file
     /// exists already. Needs the `workflow` scope.
     public func proposeReleaseWorkflow(_ slug: RepositorySlug, base: String) async throws -> GitHubPullRequest {
-        if try await repository.file(slug, path: WorkflowTemplate.path, ref: base) != nil {
-            throw DROPError(
-                .alreadyExists,
-                whatHappened: String(localized: "This repository already has \(WorkflowTemplate.path).")
-            )
-        }
-        let identity = GitHubIdentity(user: try await github.currentUser())
-        let branch = "ci/release-workflow"
-        let head = try await repository.branchHead(slug, branch: base)
-        try await repository.createBranch(slug, name: branch, from: head)
-        let message = "ci: add a release workflow"
-        try await repository.putFile(slug, path: WorkflowTemplate.path, change: FileChange(
-            message: message, text: WorkflowTemplate.release, branch: branch, sha: nil, identity: identity
-        ))
-        return try await repository.openPullRequest(slug, NewPullRequest(
-            title: message,
-            head: branch,
-            base: base,
+        try await propose(WorkflowProposal(
+            path: WorkflowTemplate.path,
+            text: WorkflowTemplate.release,
+            branch: "ci/release-workflow",
+            message: "ci: add a release workflow",
             body: """
                 Adds a release workflow that builds every `v*` tag on Linux, macOS and Windows for \
                 x86-64 and arm64 and uploads each build as an artifact.
@@ -71,6 +58,75 @@ public struct WorkflowService: Sendable {
                 Replace the build step with the project's build before merging.
 
                 """
+        ), slug, base: base)
+    }
+
+    /// Opens a pull request against `base` that adds the workflow publishing to GHCR or npm, which
+    /// DROP then starts on each tag. Refuses if the file exists already. Needs the `workflow` scope.
+    public func proposePublishWorkflow(
+        for destination: Destination,
+        _ slug: RepositorySlug,
+        base: String
+    ) async throws -> GitHubPullRequest {
+        guard let path = WorkflowTemplate.publishPath(for: destination),
+            let text = WorkflowTemplate.publish(for: destination)
+        else {
+            throw DROPError(
+                .invalidArgument,
+                whatHappened: String(localized: "\(destination.title) isn't published by a workflow.")
+            )
+        }
+        let proposal: WorkflowProposal
+        if destination == .ghcr {
+            proposal = WorkflowProposal(
+                path: path, text: text, branch: "ci/publish-ghcr", message: "ci: publish images to ghcr",
+                body: """
+                    Adds a workflow that builds the Dockerfile for a tag and pushes the image to GitHub \
+                    Container Registry with the workflow's own `GITHUB_TOKEN`. It starts by hand on a tag.
+
+                    """
+            )
+        } else {
+            proposal = WorkflowProposal(
+                path: path, text: text, branch: "ci/publish-npm", message: "ci: publish the package to npm",
+                body: """
+                    Adds a workflow that publishes the package for a tag with provenance, through npm's \
+                    trusted publishing, so no npm token is needed. It starts by hand on a tag.
+
+                    Add this repository and workflow as a trusted publisher on npmjs.com before merging.
+
+                    """
+            )
+        }
+        return try await propose(proposal, slug, base: base)
+    }
+
+    private func propose(_ proposal: WorkflowProposal, _ slug: RepositorySlug, base: String) async throws
+        -> GitHubPullRequest
+    {
+        if try await repository.file(slug, path: proposal.path, ref: base) != nil {
+            throw DROPError(
+                .alreadyExists,
+                whatHappened: String(localized: "This repository already has \(proposal.path).")
+            )
+        }
+        let identity = GitHubIdentity(user: try await github.currentUser())
+        let head = try await repository.branchHead(slug, branch: base)
+        try await repository.createBranch(slug, name: proposal.branch, from: head)
+        try await repository.putFile(slug, path: proposal.path, change: FileChange(
+            message: proposal.message, text: proposal.text, branch: proposal.branch, sha: nil, identity: identity
+        ))
+        return try await repository.openPullRequest(slug, NewPullRequest(
+            title: proposal.message, head: proposal.branch, base: base, body: proposal.body
         ))
     }
+}
+
+/// A workflow file DROP offers to add through a pull request.
+private struct WorkflowProposal {
+    let path: String
+    let text: String
+    let branch: String
+    let message: String
+    let body: String
 }

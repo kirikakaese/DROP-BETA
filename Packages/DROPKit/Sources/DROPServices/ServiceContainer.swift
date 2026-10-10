@@ -53,6 +53,10 @@ public struct ServiceContainer: Sendable {
         AutomationService(workflows: workflows, repository: repository, metadata: metadata)
     }
 
+    public var registries: RegistryService {
+        RegistryService(repository: repository, github: github, actions: actions, metadata: metadata)
+    }
+
     public var drops: DropService {
         DropService(
             releases: releases,
@@ -60,7 +64,8 @@ public struct ServiceContainer: Sendable {
             notifier: notifier,
             changelog: changelog,
             repository: repository,
-            actions: actions
+            actions: actions,
+            registries: registries
         )
     }
 

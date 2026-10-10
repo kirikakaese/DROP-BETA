@@ -8,8 +8,8 @@ DROP watches and verifies instead of doing it twice.
 
 > **Status:** early development (0.1). Signing in with GitHub, adding projects, dropping GitHub
 > Releases with assets and checksums, changelogs with version suggestions, GitHub Actions (runs,
-> logs, artifacts) and detecting existing release automation work; publishing to package
-> registries is being built. Please
+> logs, artifacts), detecting existing release automation and publishing to Homebrew, Scoop, GHCR
+> and npm work; signed releases with self-update are being built. Please
 > [open an issue](https://github.com/kirikakaese/DROP-BETA/issues) if something looks wrong.
 
 ## Features (planned)
@@ -25,7 +25,10 @@ DROP watches and verifies instead of doing it twice.
   artifacts to the drop.
 - **Package registries:** Homebrew tap (formula and cask), Scoop bucket, GHCR and npm. Each target
   is **Managed** (DROP does it), **External** (an existing workflow does it; DROP only verifies)
-  or **Off**.
+  or **Off**. Tap and bucket updates arrive as pull requests by default, and DROP never changes a
+  file another workflow writes. GHCR and npm are published by a workflow DROP starts on the tag,
+  so DROP never holds a registry token. **Try It** shows the change for the latest release
+  without writing anything.
 - **Ready to Drop:** before anything is written, one screen lists every step and who performs
   it, DROP or the named workflow. Nothing touches the network until you press **Drop**.
 - **Sign in with GitHub:** device flow, tokens only in the Keychain, refreshed before they

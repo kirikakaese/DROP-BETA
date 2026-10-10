@@ -1,6 +1,7 @@
 import DROPCore
 import DROPGitHub
 import DROPPersistence
+import DROPRegistries
 import Foundation
 
 /// What happens while a plan runs, for the progress list.
@@ -19,6 +20,8 @@ public struct DropResult: Sendable, Equatable {
     public let changelogPullRequest: GitHubPullRequest?
     /// The run of the workflow that created the GitHub Release, when a workflow owns it.
     public let workflowRun: GitHubWorkflowRun?
+    /// The pull requests that update tap and bucket files.
+    public let registryPullRequests: [GitHubPullRequest]
 }
 
 /// Plans and performs drops: the tag, the GitHub Release, its assets and `SHA256SUMS.txt`.
@@ -32,6 +35,7 @@ public struct DropService: Sendable {
     let changelog: ChangelogService?
     let repository: (any RepositoryServicing)?
     let actions: (any ActionsServicing)?
+    let registries: RegistryService?
     let now: @Sendable () -> Date
     let sleep: @Sendable (Duration) async throws -> Void
     /// How often a release workflow's run is checked, and how long DROP waits for it at most.
@@ -45,6 +49,7 @@ public struct DropService: Sendable {
         changelog: ChangelogService? = nil,
         repository: (any RepositoryServicing)? = nil,
         actions: (any ActionsServicing)? = nil,
+        registries: RegistryService? = nil,
         now: @escaping @Sendable () -> Date = { Date() },
         sleep: @escaping @Sendable (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         pollInterval: Duration = .seconds(10),
@@ -56,6 +61,7 @@ public struct DropService: Sendable {
         self.changelog = changelog
         self.repository = repository
         self.actions = actions
+        self.registries = registries
         self.now = now
         self.sleep = sleep
         self.pollInterval = pollInterval
@@ -76,6 +82,7 @@ public struct DropService: Sendable {
         if let base = request.changelogBase {
             steps.append(.openChangelogPullRequest(tag: request.tagName, base: base))
         }
+        steps += try await registrySteps(request)
         for setting in request.externalDestinations where setting.destination != .githubRelease {
             steps.append(.leaveToAutomation(destination: setting.destination, owner: setting.owner ?? "?"))
         }
@@ -233,7 +240,8 @@ public struct DropService: Sendable {
             record: record,
             unverified: run.unverified,
             changelogPullRequest: run.changelogPullRequest,
-            workflowRun: run.workflowRun
+            workflowRun: run.workflowRun,
+            registryPullRequests: run.registryPullRequests
         )
     }
 
@@ -265,6 +273,8 @@ public struct DropService: Sendable {
             )
         case .pushTag, .dispatchWorkflow, .awaitWorkflow, .verifyGitHubRelease, .leaveToAutomation:
             try await performAutomated(step, in: &run)
+        case .updateRegistryFile, .verifyRegistryFile, .dispatchPublishWorkflow, .awaitPublishWorkflow:
+            try await performRegistry(step, in: &run)
         }
     }
 
@@ -372,6 +382,80 @@ public struct DropService: Sendable {
     }
 }
 
+// MARK: Registries
+
+extension DropService {
+    /// The registries DROP publishes once the GitHub Release exists. Betas and drafts stay out of taps
+    /// and buckets; drafts aren't published anywhere. Checking a tap or bucket only reads.
+    private func registrySteps(_ request: DropRequest) async throws -> [DropStep] {
+        var steps: [DropStep] = []
+        let version = AssetPattern.version(fromTag: request.tagName)
+        for setup in request.registries where setup.isComplete && !request.isDraft {
+            if setup.writesFile {
+                guard !request.isPrerelease else { continue }
+                guard let registries else { throw DROPError.somethingWentWrong }
+                try await registries.check(setup, project: request.slug, ref: request.target.commitish)
+                if request.releaseAutomation == nil, !request.assets.isEmpty {
+                    let names = request.assets.map(\.name)
+                    _ = try AssetPattern.select(from: names, pattern: setup.assetPattern, version: version)
+                }
+                steps.append(.updateRegistryFile(
+                    destination: setup.destination,
+                    repository: setup.repository,
+                    path: setup.path,
+                    viaPullRequest: setup.writeMode == .pullRequest
+                ))
+                steps.append(.verifyRegistryFile(
+                    destination: setup.destination, repository: setup.repository, path: setup.path
+                ))
+            } else if let workflowID = setup.workflowID {
+                let name = setup.workflowName ?? String(workflowID)
+                let tag = request.tagName
+                steps.append(.dispatchPublishWorkflow(
+                    destination: setup.destination, name: name, workflowID: workflowID, tag: tag
+                ))
+                steps.append(.awaitPublishWorkflow(
+                    destination: setup.destination, name: name, workflowID: workflowID, tag: tag
+                ))
+            }
+        }
+        return steps
+    }
+
+    /// The steps that publish to a registry, after the GitHub Release exists.
+    private func performRegistry(_ step: DropStep, in run: inout DropRun) async throws {
+        let request = run.plan.request
+        guard let destination = step.registry,
+            let setup = request.registries.first(where: { $0.destination == destination })
+        else { throw DROPError.somethingWentWrong }
+        switch step {
+        case .updateRegistryFile:
+            guard let registries else { throw DROPError.somethingWentWrong }
+            // Read the release again: it now lists every asset with GitHub's checksum.
+            guard let release = try await releases.release(request.slug, tag: request.tagName) ?? run.release else {
+                throw DROPError.somethingWentWrong
+            }
+            let edit = try await registries.edit(
+                setup, project: request.slug, release: release, localChecksums: run.expected
+            )
+            if let pullRequest = try await registries.publish(edit, mode: setup.writeMode) {
+                run.registryPullRequests.append(pullRequest)
+            }
+            run.registryEdits[destination] = edit
+        case .verifyRegistryFile:
+            guard let registries, let edit = run.registryEdits[destination] else { throw DROPError.somethingWentWrong }
+            try await registries.verify(edit, mode: setup.writeMode)
+        case .dispatchPublishWorkflow(_, _, let workflowID, let tag):
+            guard let actions else { throw DROPError.somethingWentWrong }
+            try await actions.dispatch(request.slug, workflowID: workflowID, ref: tag)
+        case .awaitPublishWorkflow(_, let name, let workflowID, let tag):
+            _ = try await awaitRun(of: workflowID, named: name, tag: tag, slug: request.slug)
+        default:
+            throw DROPError.somethingWentWrong
+        }
+    }
+}
+
 /// What a running drop has done so far.
 private struct DropRun {
     let plan: DropPlan
@@ -381,6 +465,8 @@ private struct DropRun {
     var unverified: [String] = []
     var changelogPullRequest: GitHubPullRequest?
     var workflowRun: GitHubWorkflowRun?
+    var registryEdits: [Destination: RegistryEdit] = [:]
+    var registryPullRequests: [GitHubPullRequest] = []
 
     init(plan: DropPlan) {
         self.plan = plan

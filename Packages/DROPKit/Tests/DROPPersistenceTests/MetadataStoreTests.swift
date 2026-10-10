@@ -127,4 +127,26 @@ struct MetadataStoreTests {
         try store.deleteProject(id: project.id)
         #expect(try store.destinationSettings(projectID: project.id).isEmpty)
     }
+
+    @Test(arguments: try stores())
+    func keepsRegistrySetupsPerProject(_ store: any MetadataStoring) throws {
+        let project = Fixtures.project("octocat/Hello-World")
+        try store.saveProject(project)
+        var tap = RegistrySetup(
+            destination: .homebrewTap, repository: "octocat/homebrew-tap", path: "Casks/hello.rb",
+            assetPattern: "Hello-{version}.dmg"
+        )
+        try store.saveRegistrySetup(tap, projectID: project.id)
+        let npm = RegistrySetup(destination: .npm, workflowID: 4, workflowName: "publish-npm.yml")
+        try store.saveRegistrySetup(npm, projectID: project.id)
+        tap.writeMode = .directCommit
+        try store.saveRegistrySetup(tap, projectID: project.id)
+
+        let stored = try store.registrySetups(projectID: project.id)
+        #expect(stored.map(\.destination) == [.homebrewTap, .npm])
+        #expect(stored.first == tap)
+
+        try store.deleteProject(id: project.id)
+        #expect(try store.registrySetups(projectID: project.id).isEmpty)
+    }
 }

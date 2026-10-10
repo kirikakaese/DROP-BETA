@@ -46,6 +46,7 @@ public final class ProjectsModel {
     public private(set) var pendingAssets: [Project.ID: [URL]] = [:]
     /// One Actions model per project, so an open run or sheet survives switching projects.
     @ObservationIgnored private var actionsModels: [Project.ID: ProjectActionsModel] = [:]
+    @ObservationIgnored private var activityModels: [Project.ID: ProjectActivityModel] = [:]
     /// Changes whenever a drop finishes, so the project's activity reloads.
     public private(set) var dropsFinished = 0
 
@@ -92,7 +93,10 @@ public final class ProjectsModel {
     }
 
     public func activityModel(for project: Project) -> ProjectActivityModel {
-        ProjectActivityModel(project: project, services: services, account: account)
+        if let model = activityModels[project.id], model.project == project { return model }
+        let model = ProjectActivityModel(project: project, services: services, account: account)
+        activityModels[project.id] = model
+        return model
     }
 
     public func load() {

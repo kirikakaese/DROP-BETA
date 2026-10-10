@@ -23,6 +23,10 @@ public protocol MetadataStoring: Sendable {
     /// The destinations you set for a project. Unset ones aren't listed.
     func destinationSettings(projectID: UUID) throws -> [DestinationSetting]
     func saveDestinationSetting(_ setting: DestinationSetting, projectID: UUID) throws
+
+    /// How DROP publishes each registry it manages for a project. Unset ones aren't listed.
+    func registrySetups(projectID: UUID) throws -> [RegistrySetup]
+    func saveRegistrySetup(_ setup: RegistrySetup, projectID: UUID) throws
 }
 
 /// `MetadataStoring` backed by SQLite through GRDB.
@@ -103,6 +107,16 @@ public final class GRDBMetadataStore: MetadataStoring, Sendable {
                 table.primaryKey(["projectID", "destination"])
             }
         }
+        // How DROP publishes the registries it manages: tap or bucket, file, asset, workflow. No
+        // tokens: DROP never holds registry credentials.
+        migrator.registerMigration("v5") { db in
+            try db.create(table: "registrySetup") { table in
+                table.column("projectID", .text).notNull().references("project", onDelete: .cascade)
+                table.column("destination", .text).notNull()
+                table.column("setup", .text).notNull()
+                table.primaryKey(["projectID", "destination"])
+            }
+        }
         return migrator
     }
 
@@ -165,6 +179,20 @@ public final class GRDBMetadataStore: MetadataStoring, Sendable {
 
     public func saveDestinationSetting(_ setting: DestinationSetting, projectID: UUID) throws {
         try database.write { db in try DestinationRow(setting, projectID: projectID).save(db) }
+    }
+
+    public func registrySetups(projectID: UUID) throws -> [RegistrySetup] {
+        try database.read { db in
+            try RegistryRow.filter(Column("projectID") == projectID.uuidString)
+                .order(Column("destination"))
+                .fetchAll(db)
+                .compactMap(\.registrySetup)
+        }
+    }
+
+    public func saveRegistrySetup(_ setup: RegistrySetup, projectID: UUID) throws {
+        let row = try RegistryRow(setup, projectID: projectID)
+        try database.write { db in try row.save(db) }
     }
 }
 

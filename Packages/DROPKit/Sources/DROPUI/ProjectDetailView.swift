@@ -319,9 +319,9 @@ private struct ProjectSheets: ViewModifier {
     @ViewBuilder func body(content: Content) -> some View {
         switch (activity, actions) {
         case let (activity?, actions?):
-            content.modifier(ActionsSheets(actions: actions)).modifier(TakeoverConfirmation(activity: activity))
+            content.modifier(ActionsSheets(actions: actions)).modifier(DestinationSheets(activity: activity))
         case let (activity?, nil):
-            content.modifier(TakeoverConfirmation(activity: activity))
+            content.modifier(DestinationSheets(activity: activity))
         case let (nil, actions?):
             content.modifier(ActionsSheets(actions: actions))
         case (nil, nil):

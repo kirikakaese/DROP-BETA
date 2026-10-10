@@ -100,3 +100,23 @@ struct DestinationRow: Codable, FetchableRecord, PersistableRecord {
         return DestinationSetting(destination: destination, mode: mode, owner: owner)
     }
 }
+
+struct RegistryRow: Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName = "registrySetup"
+
+    var projectID: String
+    var destination: String
+    /// The setup as JSON, so new fields don't need a migration.
+    var setup: String
+
+    init(_ setup: RegistrySetup, projectID: UUID) throws {
+        self.projectID = projectID.uuidString
+        destination = setup.destination.rawValue
+        self.setup = String(data: try JSONEncoder().encode(setup), encoding: .utf8) ?? "{}"
+    }
+
+    /// `nil` for a row that no longer decodes; it is skipped.
+    var registrySetup: RegistrySetup? {
+        try? JSONDecoder().decode(RegistrySetup.self, from: Data(setup.utf8))
+    }
+}
