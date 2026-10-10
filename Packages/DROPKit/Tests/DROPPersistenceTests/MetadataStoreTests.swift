@@ -105,4 +105,26 @@ struct MetadataStoreTests {
         #expect(try store.auditEntries(projectID: project.id, limit: 10).isEmpty)
         #expect(try store.dropRecords(projectID: other.id).count == 1)
     }
+
+    @Test(arguments: try stores())
+    func keepsDestinationSettingsPerProject(_ store: any MetadataStoring) throws {
+        let project = Fixtures.project("octocat/Hello-World")
+        try store.saveProject(project)
+        let setting = DestinationSetting(
+            destination: .homebrewTap, mode: .external, owner: ".github/workflows/release.yml"
+        )
+        try store.saveDestinationSetting(setting, projectID: project.id)
+        try store.saveDestinationSetting(DestinationSetting(destination: .npm, mode: .off), projectID: project.id)
+        var changed = setting
+        changed.mode = .off
+        try store.saveDestinationSetting(changed, projectID: project.id)
+
+        let stored = try store.destinationSettings(projectID: project.id)
+        #expect(stored.count == 2)
+        let tap = stored.first { $0.destination == .homebrewTap }
+        #expect(tap?.mode == .off)
+
+        try store.deleteProject(id: project.id)
+        #expect(try store.destinationSettings(projectID: project.id).isEmpty)
+    }
 }

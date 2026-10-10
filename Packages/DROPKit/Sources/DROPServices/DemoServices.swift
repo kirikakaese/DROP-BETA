@@ -117,7 +117,15 @@ extension ServiceContainer {
             files: [
                 "CHANGELOG.md": "# Changelog\n",
                 ".github/workflows/ci.yml": "on:\n  push:\n    branches: [main]\n  pull_request:\n",
-                ".github/workflows/release.yml": "on:\n  push:\n    tags: ['v*']\n",
+                ".github/workflows/release.yml": """
+                    on:
+                      push:
+                        tags: ['v*']
+                    jobs:
+                      tap:
+                        steps:
+                          - run: git clone https://github.com/kirikakaese/homebrew-tap.git tap
+                    """,
                 ".github/workflows/strings.yml": "on:\n  workflow_dispatch:\n  pull_request:\n",
             ]
         )

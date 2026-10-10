@@ -14,6 +14,10 @@ public protocol RepositoryServicing: Sendable {
     func file(_ slug: RepositorySlug, path: String, ref: String) async throws -> GitHubFile?
     func branchHead(_ slug: RepositorySlug, branch: String) async throws -> String
     func createBranch(_ slug: RepositorySlug, name: String, from sha: String) async throws
+    /// The full SHA of a branch, tag or abbreviated SHA.
+    func commitSHA(_ slug: RepositorySlug, ref: String) async throws -> String
+    /// Creates the tag `name` on `sha` (and so pushes it).
+    func createTag(_ slug: RepositorySlug, name: String, sha: String) async throws
     func putFile(_ slug: RepositorySlug, path: String, change: FileChange) async throws
     func openPullRequest(_ slug: RepositorySlug, _ pullRequest: NewPullRequest) async throws -> GitHubPullRequest
 }
@@ -52,6 +56,14 @@ public struct LiveRepositoryService: RepositoryServicing {
 
     public func createBranch(_ slug: RepositorySlug, name: String, from sha: String) async throws {
         _ = try await client.send(.createBranch(slug, name: name, sha: sha))
+    }
+
+    public func commitSHA(_ slug: RepositorySlug, ref: String) async throws -> String {
+        try await client.decode(GitHubCommit.self, from: .commit(slug, ref: ref)).sha
+    }
+
+    public func createTag(_ slug: RepositorySlug, name: String, sha: String) async throws {
+        _ = try await client.send(.createTag(slug, name: name, sha: sha))
     }
 
     public func putFile(_ slug: RepositorySlug, path: String, change: FileChange) async throws {
@@ -130,6 +142,23 @@ public final class InMemoryRepositoryService: RepositoryServicing, Sendable {
             }
             state.branches[name] = sha
             state.files[name] = state.files["main"] ?? [:]
+        }
+    }
+
+    public func commitSHA(_ slug: RepositorySlug, ref: String) async throws -> String {
+        try state.withLock { state in
+            if let sha = state.branches[ref] ?? state.tags[ref] { return sha }
+            guard let commit = state.commits.first(where: { $0.sha.hasPrefix(ref) }) else {
+                throw DROPError.repositoryNotFound(details: "No commit \(ref)")
+            }
+            return commit.sha
+        }
+    }
+
+    public func createTag(_ slug: RepositorySlug, name: String, sha: String) async throws {
+        try state.withLock { state in
+            guard state.tags[name] == nil else { throw DROPError(.rejected, whatHappened: "Reference already exists") }
+            state.tags[name] = sha
         }
     }
 

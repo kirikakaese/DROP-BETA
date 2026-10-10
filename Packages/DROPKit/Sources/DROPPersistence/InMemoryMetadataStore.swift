@@ -7,6 +7,7 @@ public final class InMemoryMetadataStore: MetadataStoring, Sendable {
     private let projects: OSAllocatedUnfairLock<[Project]>
     private let drops = OSAllocatedUnfairLock<[DropRecord]>(initialState: [])
     private let audit = OSAllocatedUnfairLock<[AuditEntry]>(initialState: [])
+    private let destinations = OSAllocatedUnfairLock<[UUID: [Destination: DestinationSetting]]>(initialState: [:])
 
     public init(projects: [Project] = []) {
         self.projects = OSAllocatedUnfairLock(initialState: projects)
@@ -33,6 +34,7 @@ public final class InMemoryMetadataStore: MetadataStoring, Sendable {
         projects.withLock { $0.removeAll { $0.id == id } }
         drops.withLock { $0.removeAll { $0.projectID == id } }
         audit.withLock { $0.removeAll { $0.projectID == id } }
+        _ = destinations.withLock { $0.removeValue(forKey: id) }
     }
 
     public func dropRecords(projectID: UUID) throws -> [DropRecord] {
@@ -56,5 +58,14 @@ public final class InMemoryMetadataStore: MetadataStoring, Sendable {
 
     public func appendAuditEntry(_ entry: AuditEntry) throws {
         audit.withLock { $0.append(entry) }
+    }
+
+    public func destinationSettings(projectID: UUID) throws -> [DestinationSetting] {
+        destinations.withLock { $0[projectID].map { Array($0.values) } ?? [] }
+            .sorted { $0.destination.rawValue < $1.destination.rawValue }
+    }
+
+    public func saveDestinationSetting(_ setting: DestinationSetting, projectID: UUID) throws {
+        destinations.withLock { $0[projectID, default: [:]][setting.destination] = setting }
     }
 }

@@ -77,3 +77,26 @@ struct AuditRow: Codable, FetchableRecord, PersistableRecord {
         )
     }
 }
+
+struct DestinationRow: Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName = "destinationSetting"
+
+    var projectID: String
+    var destination: String
+    var mode: String
+    var owner: String?
+
+    init(_ setting: DestinationSetting, projectID: UUID) {
+        self.projectID = projectID.uuidString
+        destination = setting.destination.rawValue
+        mode = setting.mode.rawValue
+        owner = setting.owner
+    }
+
+    var setting: DestinationSetting? {
+        guard let destination = Destination(rawValue: destination), let mode = OwnershipMode(rawValue: mode) else {
+            return nil
+        }
+        return DestinationSetting(destination: destination, mode: mode, owner: owner)
+    }
+}
