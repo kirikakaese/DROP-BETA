@@ -24,6 +24,8 @@ enum ScreenshotScenario: String, CaseIterable {
     case settingsAccount = "settings-account"
     case settingsUpdates = "settings-updates"
     case settingsAppIcon = "settings-app-icon"
+    case settingsAppLock = "settings-app-lock"
+    case locked
 
     static var requested: ScreenshotScenario? {
         UserDefaults.standard.string(forKey: "DROPScreenshot").flatMap(Self.init(rawValue:))
@@ -47,13 +49,13 @@ enum ScreenshotScenario: String, CaseIterable {
         await projects.refreshFromGitHub()
         if account == .signedIn { projects.selection = projects.projects.first?.id }
         switch self {
-        case .signedOut, .sessionEnded, .projects:
+        case .signedOut, .sessionEnded, .projects, .locked:
             break
         case .signIn:
             projects.account.signIn()
         case .addProject:
             projects.isAddingProject = true
-        case .settingsGeneral, .settingsAccount, .settingsUpdates, .settingsAppIcon:
+        case .settingsGeneral, .settingsAccount, .settingsUpdates, .settingsAppIcon, .settingsAppLock:
             UserDefaults.standard.set(settingsTab, forKey: "settingsTab")
             NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
         case .run, .runWorkflow, .releaseWorkflow:
@@ -70,6 +72,7 @@ enum ScreenshotScenario: String, CaseIterable {
         case .settingsAccount: "account"
         case .settingsUpdates: "updates"
         case .settingsAppIcon: "appIcon"
+        case .settingsAppLock: "appLock"
         default: "general"
         }
     }

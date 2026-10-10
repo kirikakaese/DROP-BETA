@@ -50,3 +50,5 @@ capture 16-registry-setup registry-setup all
 capture 17-registry-dry-run registry-dry-run all
 capture 18-settings-updates settings-updates front
 capture 19-settings-app-icon settings-app-icon front
+capture 20-settings-app-lock settings-app-lock front
+capture 21-locked locked all

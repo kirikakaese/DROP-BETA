@@ -29,6 +29,8 @@ public struct DROPError: Error, Sendable, Equatable {
         case authorizationFailed
         /// This build has no GitHub OAuth Client ID.
         case notConfigured
+        /// Touch ID or the login password was cancelled, failed or isn't available.
+        case authenticationFailed
         /// Anything else.
         case unexpected
     }
