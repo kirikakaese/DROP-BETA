@@ -9,6 +9,7 @@ struct DROPApp: App {
     private let services: ServiceContainer
     @State private var account: AccountModel
     @State private var projects: ProjectsModel
+    @State private var updates = UpdateModel()
 
     init() {
         #if DEBUG
@@ -38,13 +39,17 @@ struct DROPApp: App {
                 Button("About \(AboutPanel.shortName)") {
                     AboutPanel.show()
                 }
+                Button("Check for Updates…") { updates.checkNow() }
+                    .disabled(!updates.isAvailable)
             }
             SidebarCommands()
             ProjectCommands(model: projects)
         }
 
         Settings {
-            SettingsView(account: account)
+            SettingsView(account: account) {
+                UpdateSettingsView(model: updates)
+            }
         }
     }
 }

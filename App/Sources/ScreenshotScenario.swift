@@ -22,6 +22,7 @@ enum ScreenshotScenario: String, CaseIterable {
     case registryDryRun = "registry-dry-run"
     case settingsGeneral = "settings-general"
     case settingsAccount = "settings-account"
+    case settingsUpdates = "settings-updates"
 
     static var requested: ScreenshotScenario? {
         UserDefaults.standard.string(forKey: "DROPScreenshot").flatMap(Self.init(rawValue:))
@@ -51,8 +52,8 @@ enum ScreenshotScenario: String, CaseIterable {
             projects.account.signIn()
         case .addProject:
             projects.isAddingProject = true
-        case .settingsGeneral, .settingsAccount:
-            UserDefaults.standard.set(self == .settingsGeneral ? "general" : "account", forKey: "settingsTab")
+        case .settingsGeneral, .settingsAccount, .settingsUpdates:
+            UserDefaults.standard.set(settingsTab, forKey: "settingsTab")
             NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
         case .run, .runWorkflow, .releaseWorkflow:
             await prepareActions(projects)
@@ -60,6 +61,14 @@ enum ScreenshotScenario: String, CaseIterable {
             await prepareDrop(projects)
         case .registrySetup, .registryDryRun:
             await prepareRegistry(projects)
+        }
+    }
+
+    private var settingsTab: String {
+        switch self {
+        case .settingsAccount: "account"
+        case .settingsUpdates: "updates"
+        default: "general"
         }
     }
 

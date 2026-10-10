@@ -1,0 +1,216 @@
+name: Release
+
+# Push a tag like v0.9.0 (or v0.9.1-beta.1 for a beta) to build, sign, package and publish DROP.
+# See RELEASING.md for the one-time setup.
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: macos-15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SPARKLE_PUBLIC_KEY: ${{ vars.SPARKLE_PUBLIC_KEY }}
+      DROP_OAUTH_CLIENT_ID: ${{ vars.DROP_OAUTH_CLIENT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Version
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::Release tags must look like v1.2.3 or v1.2.3-beta.1"
+            exit 1
+          fi
+          beta=false
+          if [[ "$version" == *-* ]]; then beta=true; fi
+          # Sparkle compares CFBundleVersion: the commit count on the tagged commit only ever grows.
+          build="$(git rev-list --count HEAD)"
+          {
+            echo "version=$version"
+            echo "build=$build"
+            echo "beta=$beta"
+          } >> "$GITHUB_OUTPUT"
+          echo "Releasing $version (build $build, beta: $beta)"
+
+      - name: Check the setup
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          missing=0
+          if [ -z "$DROP_OAUTH_CLIENT_ID" ]; then
+            echo "::error::Set the repository variable DROP_OAUTH_CLIENT_ID (see SETUP.md)."
+            missing=1
+          fi
+          if [ -z "$SPARKLE_PUBLIC_KEY" ]; then
+            echo "::error::Set the repository variable SPARKLE_PUBLIC_KEY (see RELEASING.md)."
+            missing=1
+          fi
+          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
+            echo "::error::Add the repository secret SPARKLE_PRIVATE_KEY (see RELEASING.md)."
+            missing=1
+          fi
+          slug="$(scripts/repo_slug.sh)"
+          lower() { tr '[:upper:]' '[:lower:]' <<< "$1"; }
+          if [ "$(lower "$slug")" != "$(lower "$GITHUB_REPOSITORY")" ]; then
+            echo "::error::Config/Repo.xcconfig names $slug, but this is $GITHUB_REPOSITORY."
+            missing=1
+          fi
+          exit "$missing"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Build (universal, ad-hoc signed)
+        run: |
+          xcodebuild build \
+            -project DROP.xcodeproj \
+            -scheme DROP \
+            -configuration Release \
+            -destination 'generic/platform=macOS' \
+            -derivedDataPath build \
+            MARKETING_VERSION="${{ steps.version.outputs.version }}" \
+            CURRENT_PROJECT_VERSION="${{ steps.version.outputs.build }}" \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM= \
+            ENABLE_HARDENED_RUNTIME=NO \
+            DROP_OAUTH_CLIENT_ID="$DROP_OAUTH_CLIENT_ID" \
+            SPARKLE_PUBLIC_KEY="$SPARKLE_PUBLIC_KEY"
+
+      - name: Re-sign the app ad-hoc
+        run: scripts/adhoc_sign.sh build/Build/Products/Release/DROP.app
+
+      - name: Verify the app
+        run: |
+          app=build/Build/Products/Release/DROP.app
+          plist="$app/Contents/Info.plist"
+          lipo -archs "$app/Contents/MacOS/DROP" | grep -Eq "x86_64 arm64|arm64 x86_64"
+          test -d "$app/Contents/Frameworks/Sparkle.framework"
+          test "$(plutil -extract CFBundleShortVersionString raw "$plist")" = "${{ steps.version.outputs.version }}"
+          test "$(plutil -extract SUPublicEDKey raw "$plist")" = "$SPARKLE_PUBLIC_KEY"
+          test "$(plutil -extract DROPOAuthClientID raw "$plist")" = "$DROP_OAUTH_CLIENT_ID"
+          test "$(plutil -extract DROPRepositorySlug raw "$plist")" = "$(scripts/repo_slug.sh)"
+          test "$(plutil -extract SUFeedURL raw "$plist")" = \
+            "https://github.com/$(scripts/repo_slug.sh)/releases/latest/download/appcast.xml"
+
+      - name: Launch the app
+        run: scripts/launch_test.sh build/Build/Products/Release/DROP.app
+
+      - name: Package
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          app=build/Build/Products/Release/DROP.app
+          mkdir -p dist
+          # The zip is what Sparkle downloads; the DMG is for people and Homebrew.
+          ditto -c -k --sequesterRsrc --keepParent "$app" "dist/DROP-$version.zip"
+          staging="$(mktemp -d)"
+          ditto "$app" "$staging/DROP.app"
+          ln -s /Applications "$staging/Applications"
+          hdiutil create -volname "DROP" -srcfolder "$staging" -fs HFS+ \
+            -format UDZO -ov "dist/DROP-$version.dmg"
+          (cd dist && shasum -a 256 "DROP-$version.dmg" "DROP-$version.zip" > SHA256SUMS.txt)
+          cat dist/SHA256SUMS.txt
+
+      - name: Sign the update and write the appcast
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          tools="$RUNNER_TEMP/sparkle"
+          mkdir -p "$tools"
+          gh release download --repo sparkle-project/Sparkle --pattern 'Sparkle-[0-9]*.tar.xz' --dir "$tools"
+          tar -xf "$tools"/Sparkle-*.tar.xz -C "$tools"
+          keyfile="$RUNNER_TEMP/sparkle-ed25519.key"
+          (umask 077 && printf '%s' "$SPARKLE_PRIVATE_KEY" > "$keyfile")
+          signature="$("$tools/bin/sign_update" --ed-key-file "$keyfile" "dist/DROP-$version.zip")"
+          rm -f "$keyfile"
+          curl -fsSL -o previous.xml \
+            "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/appcast.xml" || : > previous.xml
+          beta_flag=""
+          if [ "${{ steps.version.outputs.beta }}" = true ]; then beta_flag="--beta"; fi
+          python3 scripts/appcast.py \
+            --previous previous.xml \
+            --output dist/appcast.xml \
+            --version "$version" \
+            --build "${{ steps.version.outputs.build }}" \
+            --url "https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/DROP-$version.zip" \
+            --signature-line "$signature" \
+            --notes-url "https://github.com/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF_NAME" \
+            --link "https://github.com/$GITHUB_REPOSITORY" \
+            $beta_flag
+
+      - name: Publish the release
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          cat > notes.md <<NOTES
+          **Install:** download \`DROP-$version.dmg\` and drag DROP to Applications, or run
+          \`brew install --cask $GITHUB_REPOSITORY_OWNER/tap/drop\`.
+
+          DROP is not notarized by Apple. The first time you open it, macOS blocks it: open
+          **System Settings → Privacy & Security** and click **Open Anyway**. Later versions install
+          through DROP's own updater, which only accepts updates signed with DROP's release key.
+          Checksums are in \`SHA256SUMS.txt\`.
+          NOTES
+          prerelease=""
+          if [ "${{ steps.version.outputs.beta }}" = true ]; then prerelease="--prerelease"; fi
+          assets=("dist/DROP-$version.dmg" "dist/DROP-$version.zip" dist/appcast.xml dist/SHA256SUMS.txt)
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            # A re-run of the same tag: replace the files, keep the release and its notes.
+            echo "The release $GITHUB_REF_NAME already exists; replacing its files."
+            gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
+              --title "DROP $version" --notes-file notes.md --generate-notes $prerelease
+          fi
+          if [ -n "$prerelease" ]; then
+            # The feed URL points at the latest stable release; give it the appcast with the beta.
+            latest="$(gh release view --json tagName --jq .tagName 2>/dev/null || true)"
+            if [ -n "$latest" ] && [ "$latest" != "$GITHUB_REF_NAME" ]; then
+              gh release upload "$latest" dist/appcast.xml --clobber
+            fi
+          fi
+
+      # Writes only Casks/drop.rb. Every other file in the tap belongs to someone else.
+      - name: Update the Homebrew tap
+        if: steps.version.outputs.beta == 'false'
+        env:
+          TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
+        run: |
+          if [ -z "$TAP_TOKEN" ]; then
+            echo "::notice::TAP_TOKEN is not set, so the Homebrew tap was not updated (see RELEASING.md)."
+            exit 0
+          fi
+          version="${{ steps.version.outputs.version }}"
+          sha="$(shasum -a 256 "dist/DROP-$version.dmg" | cut -d' ' -f1)"
+          git clone "https://x-access-token:${TAP_TOKEN}@github.com/$GITHUB_REPOSITORY_OWNER/homebrew-tap.git" tap
+          mkdir -p tap/Casks
+          sed -e "s/@VERSION@/$version/" -e "s/@SHA256@/$sha/" -e "s#@REPOSITORY@#$GITHUB_REPOSITORY#g" \
+            scripts/drop.rb.template > tap/Casks/drop.rb
+          cd tap
+          git config user.name "kirikakaese"
+          git config user.email "252577764+kirikakaese@users.noreply.github.com"
+          git add Casks/drop.rb
+          if git diff --cached --quiet; then
+            echo "The cask is already up to date."
+          else
+            git commit -m "drop $version"
+            git push
+          fi

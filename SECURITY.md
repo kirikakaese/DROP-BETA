@@ -58,9 +58,12 @@ Until 1.0, only the latest release receives security fixes.
 
 ## Signing and entitlements
 
-Releases will be **ad-hoc signed** and not notarized: the project has no paid Apple Developer
+Releases are **ad-hoc signed** and not notarized: the project has no paid Apple Developer
 account. macOS blocks the first launch until you allow it; compare the download with
-`SHA256SUMS.txt` on the release page (Homebrew does this for you). Updates will only be installed
-with a valid EdDSA signature from DROP's release key.
+`SHA256SUMS.txt` on the release page (Homebrew does this for you). Updates (through
+[Sparkle](https://sparkle-project.org)) are only installed with a valid EdDSA signature from
+DROP's release key; builds not made by the release workflow have no key and never update
+themselves. The private key exists only in the maintainer's Keychain and as a GitHub Actions
+secret; see [RELEASING.md](RELEASING.md).
 
 Every entitlement is documented in [docs/ENTITLEMENTS.md](docs/ENTITLEMENTS.md).
